@@ -9,14 +9,13 @@ import sys
 import urllib.parse
 from datetime import datetime, timezone
 
-from . import __version__, diffing
+from . import __version__, diffing, subscan
 from .config import ScanConfig
 from .console import UI
 from .models import ScanResult, Target
 from .recon import active, passive
 from .report import write as write_reports
 from .scan import engine as scan_engine
-from . import subscan
 from .utils import dnsx
 from .utils.tools import available_tools
 

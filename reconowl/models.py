@@ -9,7 +9,7 @@ never touch output formatting.
 from __future__ import annotations
 
 import enum
-from dataclasses import dataclass, field, asdict
+from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
 from typing import Any
 
@@ -28,7 +28,7 @@ class Severity(enum.IntEnum):
         return self.name.capitalize()
 
     @classmethod
-    def from_str(cls, value: str) -> "Severity":
+    def from_str(cls, value: str) -> Severity:
         """Parse a severity name (as used by nuclei/others), defaulting to INFO."""
         try:
             return cls[value.strip().upper()]

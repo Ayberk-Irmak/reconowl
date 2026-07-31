@@ -6,6 +6,11 @@ All notable changes to reconowl are documented here. The format is based on
 
 ## [Unreleased]
 
+### Added
+- CI now runs `ruff` linting (focused `E`/`F`/`I`/`UP`/`B` ruleset) alongside the
+  test matrix; issue & PR templates, a `SECURITY.md` disclosure policy, an
+  `Example` section in the README, and Dependabot for pip + GitHub Actions.
+
 ## [0.3.0] - 2026-07-31
 
 ### Changed

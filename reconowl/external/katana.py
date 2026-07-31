@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from ..utils.tools import find_tool, header_flags, run
+from ..utils.tools import find_tool, run
 
 
 def available() -> bool:

@@ -12,7 +12,7 @@ import urllib.parse
 
 from ..models import Finding, Severity
 from ..utils.concurrency import parallel_map
-from ..utils.net import HttpClient, build_proof, in_scope
+from ..utils.net import HttpClient, build_proof
 from ..utils.tools import find_tool, run
 from . import injpoints
 from ._common import point_baselines

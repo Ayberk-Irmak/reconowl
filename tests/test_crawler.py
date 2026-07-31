@@ -18,8 +18,8 @@ def test_extract_links_absolute_and_scope_agnostic():
     assert "https://site.com/about" in links
     assert "https://site.com/dir/products.php?id=1" in links
     # css/js/mailto/javascript are skipped
-    assert not any(l.endswith(".css") or l.endswith(".js") for l in links)
-    assert not any("mailto" in l or "javascript" in l for l in links)
+    assert not any(link.endswith(".css") or link.endswith(".js") for link in links)
+    assert not any("mailto" in link or "javascript" in link for link in links)
 
 
 def test_extract_form_urls_builds_parametrized_get():

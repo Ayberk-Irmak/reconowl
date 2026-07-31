@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from reconowl.config import ScanConfig
 from reconowl.models import ScanResult, Target
 from reconowl.scan import waf
 from reconowl.utils.net import HttpClient, HttpResponse

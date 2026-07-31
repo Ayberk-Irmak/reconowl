@@ -196,7 +196,7 @@ def _render_pass(result, config, ui, client, base, host, static_added, add, add_
     elif static_added < 5:  # auto: only bother when static crawl found little
         probe = client.get(base)
         if probe.ok and "html" in probe.header("content-type").lower():
-            links = [l for l in extract_links(probe.text, base) if in_scope(l, host)]
+            links = [ln for ln in extract_links(probe.text, base) if in_scope(ln, host)]
             if render.looks_like_spa(probe.text, len(links)):
                 render_urls = [base]
 

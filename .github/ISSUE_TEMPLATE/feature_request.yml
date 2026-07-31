@@ -1,0 +1,26 @@
+name: Feature request
+description: Suggest a new check, integration, or improvement
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem would this solve?
+      description: The use case or gap you're hitting today.
+      placeholder: "e.g. reconowl should detect publicly readable S3 buckets referenced in pages."
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: What should reconowl do? For a new check, how would a true positive be confirmed (to keep false positives low)?
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives / prior art
+      description: Existing tools or techniques that do this, if any.
+    validations:
+      required: false

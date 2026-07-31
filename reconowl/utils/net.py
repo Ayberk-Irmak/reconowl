@@ -179,7 +179,7 @@ class HttpClient:
         return self.request("HEAD", url, **kwargs)
 
 
-def build_client(config, timeout: float | None = None) -> "HttpClient":
+def build_client(config, timeout: float | None = None) -> HttpClient:
     """Construct an HttpClient carrying the run's auth headers/cookie."""
     return HttpClient(
         timeout=timeout if timeout is not None else config.timeout,
@@ -194,7 +194,7 @@ def build_client(config, timeout: float | None = None) -> "HttpClient":
 _SENSITIVE_HEADERS = {"cookie", "authorization", "x-api-key", "proxy-authorization"}
 
 
-def build_proof(resp: "HttpResponse", max_body: int = 1500) -> dict[str, str]:
+def build_proof(resp: HttpResponse, max_body: int = 1500) -> dict[str, str]:
     """Render a request/response pair for a finding's evidence (auth redacted)."""
     req = [f"{resp.request_method} {resp.url}"]
     for k, v in (resp.request_headers or {}).items():

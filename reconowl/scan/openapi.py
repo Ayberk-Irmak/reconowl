@@ -151,7 +151,7 @@ def parse_spec(doc: dict, origin: str) -> list[dict]:
             if isinstance(rb, dict):
                 content = rb.get("content", {})
                 if isinstance(content, dict):
-                    for ct, media in content.items():
+                    for media in content.values():
                         if isinstance(media, dict):
                             body.extend(_schema_fields(doc, media.get("schema", {})))
             # Build a concrete, in-scope URL (path params -> "1").
