@@ -3,7 +3,7 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "strix-scanner"
+name = "reconowl"
 description = "Recon-to-report offensive security orchestrator for authorized penetration testing"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -33,26 +33,26 @@ dynamic = ["version"]
 
 [project.optional-dependencies]
 test = ["pytest>=7.0"]
-# Headless JS rendering for SPAs. Optional: Strix falls back to static crawling
+# Headless JS rendering for SPAs. Optional: reconowl falls back to static crawling
 # when absent. After install, run `playwright install chromium` for the browser.
 render = ["playwright>=1.40"]
 
 [project.urls]
-Homepage = "https://github.com/Ayberk-Irmak/strix"
-Repository = "https://github.com/Ayberk-Irmak/strix"
-Issues = "https://github.com/Ayberk-Irmak/strix/issues"
+Homepage = "https://github.com/Ayberk-Irmak/reconowl"
+Repository = "https://github.com/Ayberk-Irmak/reconowl"
+Issues = "https://github.com/Ayberk-Irmak/reconowl/issues"
 
 [project.scripts]
-strix = "strix.cli:main"
+reconowl = "reconowl.cli:main"
 
 [tool.setuptools.dynamic]
-version = { attr = "strix.__version__" }
+version = { attr = "reconowl.__version__" }
 
 [tool.setuptools.packages.find]
-include = ["strix*"]
+include = ["reconowl*"]
 
 [tool.setuptools.package-data]
-strix = ["data/wordlists/*.txt", "data/*.json", "report/templates/*.j2"]
+reconowl = ["data/wordlists/*.txt", "data/*.json", "report/templates/*.j2"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

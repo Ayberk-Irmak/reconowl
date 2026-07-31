@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from strix.models import ScanResult, Target
-from strix.scan import ssti
-from strix.utils.net import HttpResponse
+from reconowl.models import ScanResult, Target
+from reconowl.scan import ssti
+from reconowl.utils.net import HttpResponse
 
 
 def test_detect_evaluated_product():
@@ -51,7 +51,7 @@ def test_check_detects_ssti():
     class UI:
         def info(self, m): pass
 
-    from strix.config import ScanConfig
+    from reconowl.config import ScanConfig
     findings = ssti.check(r, ScanConfig(), Client(), UI())
     assert findings and findings[0].category == "ssti"
     assert findings[0].severity.name == "HIGH"

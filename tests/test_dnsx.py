@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from strix.utils import dnsx
+from reconowl.utils import dnsx
 
 
 def test_is_ip_literal():

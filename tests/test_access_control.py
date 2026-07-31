@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
-from strix.config import ScanConfig
-from strix.models import ScanResult, Severity, Target
-from strix.scan import access_control as ac
-from strix.utils.net import HttpResponse
+from reconowl.config import ScanConfig
+from reconowl.models import ScanResult, Severity, Target
+from reconowl.scan import access_control as ac
+from reconowl.utils.net import HttpResponse
 
 
 def test_helpers():
@@ -29,7 +29,7 @@ def test_unauth_check_flags_missing_control():
             return HttpResponse(url=url, ok=True, status=200, headers={}, text="Account details " * 40)
 
     # The bare (unauth) client returns the SAME content -> no access control.
-    import strix.scan.access_control as mod
+    import reconowl.scan.access_control as mod
     mod._bare_client = lambda config: AuthedClient()
 
     findings = ac._unauth_check(r, cfg, AuthedClient(), None)
@@ -50,7 +50,7 @@ def test_unauth_check_no_flag_when_login_required():
         def get(self, url, **k):
             return HttpResponse(url=url, ok=True, status=200, headers={}, text='<input type="password">')
 
-    import strix.scan.access_control as mod
+    import reconowl.scan.access_control as mod
     mod._bare_client = lambda config: Bare()
     assert ac._unauth_check(r, cfg, Authed(), None) == []
 

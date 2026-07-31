@@ -1,13 +1,13 @@
-# Strix
+# reconowl
 
-[![CI](https://github.com/Ayberk-Irmak/strix/actions/workflows/ci.yml/badge.svg)](https://github.com/Ayberk-Irmak/strix/actions/workflows/ci.yml)
-[![PyPI](https://img.shields.io/pypi/v/strix-scanner)](https://pypi.org/project/strix-scanner/)
+[![CI](https://github.com/Ayberk-Irmak/reconowl/actions/workflows/ci.yml/badge.svg)](https://github.com/Ayberk-Irmak/reconowl/actions/workflows/ci.yml)
+[![PyPI](https://img.shields.io/pypi/v/reconowl)](https://pypi.org/project/reconowl/)
 ![python](https://img.shields.io/badge/python-3.10%2B-blue)
 ![license](https://img.shields.io/badge/license-MIT-green)
 ![checks](https://img.shields.io/badge/native%20checks-28-8a2be2)
 ![tests](https://img.shields.io/badge/tests-209-brightgreen)
 
-**Recon → scan → report, in one command.** Strix is a CLI penetration-testing
+**Recon → scan → report, in one command.** reconowl is a CLI penetration-testing
 orchestrator: point it at a target and it runs passive + active reconnaissance,
 a detailed vulnerability scan, and produces an HTML/JSON/Markdown report.
 
@@ -17,13 +17,13 @@ reliable native checks** where they don't — so a scan is useful on a full Kali
 box and on a bare Python install alike.
 
 ```
-strix example.com -y
+reconowl example.com -y
 ```
 
 > ## ⚠️ Authorized use only
-> Strix performs active scanning and light exploitation probing. **Use it only
+> reconowl performs active scanning and light exploitation probing. **Use it only
 > against systems you own or are explicitly authorized in writing to test.**
-> Unauthorized scanning is illegal in most jurisdictions. Strix will not start a
+> Unauthorized scanning is illegal in most jurisdictions. reconowl will not start a
 > scan until you confirm authorization (interactively, or with `-y`/`--authorize`).
 > You are solely responsible for how you use it.
 
@@ -49,7 +49,7 @@ strix example.com -y
   **endpoints** (feeding the injection checks) and **hard-coded secrets** (AWS,
   Google, Slack, GitHub, Stripe, private keys, JWTs, …), reported redacted.
 - **SPA / JS rendering** (`--render`, auto-detected): when a target renders its
-  links/forms client-side (React/Vue/Angular/Next/…), Strix drives a headless
+  links/forms client-side (React/Vue/Angular/Next/…), reconowl drives a headless
   browser (Playwright) to render seed pages, harvesting the rendered DOM **and**
   the **XHR/fetch API endpoints** the app calls — then feeds them to the checks.
   Auto-triggers only on SPA-like pages; degrades to static + JS-endpoint
@@ -164,7 +164,7 @@ strix example.com -y
 
 **Authenticated scanning** — a cookie, bearer token, basic auth, or custom
 headers (`--cookie / --bearer / --auth-basic / -H`) are attached to every request
-so checks reach authenticated surface area — or let Strix **log in for you**
+so checks reach authenticated surface area — or let reconowl **log in for you**
 (`--login-url/--login-user/--login-pass`) and crawl + scan the session.
 
 ## Requirements
@@ -172,62 +172,62 @@ so checks reach authenticated surface area — or let Strix **log in for you**
 - Python 3.10+
 - Python packages (`pip install -r requirements.txt`): rich, requests,
   dnspython, jinja2, cryptography.
-- Optional external tools on `PATH` (Strix auto-detects and degrades gracefully):
+- Optional external tools on `PATH` (reconowl auto-detects and degrades gracefully):
   `nmap`, `nuclei`, `httpx`, `katana`, `sqlmap`, `nikto`, `whatweb`, `wafw00f`,
   `whois`. All ship with Kali Linux.
 - Optional **headless browser** for SPA/JS rendering: install the `render` extra
   (`pip install ".[render]"`) then `playwright install chromium`. Without it,
-  Strix falls back to static crawling.
+  reconowl falls back to static crawling.
 
 ## Install
 
 ```bash
-pip install strix-scanner        # from PyPI — installs the `strix` command
-strix --help
+pip install reconowl        # from PyPI — installs the `reconowl` command
+reconowl --help
 ```
 
 Optional **headless browser** for SPA/JS rendering:
 
 ```bash
-pip install "strix-scanner[render]" && playwright install chromium
+pip install "reconowl[render]" && playwright install chromium
 ```
 
 From source (for development):
 
 ```bash
-git clone https://github.com/Ayberk-Irmak/strix.git && cd strix
+git clone https://github.com/Ayberk-Irmak/reconowl.git && cd reconowl
 pip install -e .
-python -m strix --help
+python -m reconowl --help
 ```
 
 ## Usage
 
-The examples below use the `strix` command; `python -m strix` is equivalent.
+The examples below use the `reconowl` command; `python -m reconowl` is equivalent.
 
 ```bash
 # Full pipeline (recon + scan + report), confirming authorization inline:
-strix example.com -y
+reconowl example.com -y
 
 # Web app target, aggressive intensity, HTML report only:
-strix https://target.tld -y -i aggressive --formats html
+reconowl https://target.tld -y -i aggressive --formats html
 
 # Recon only, no active scanning:
-strix target.tld -y --passive-only
+reconowl target.tld -y --passive-only
 
 # Native-only (don't call nmap/nuclei/etc.):
-strix target.tld -y --no-external
+reconowl target.tld -y --no-external
 
 # Also scan discovered subdomains:
-strix target.tld -y --subdomains
+reconowl target.tld -y --subdomains
 
 # Confirm SQLi candidates with sqlmap, custom output dir:
-strix "https://target.tld/item.php?id=1" -y --sqlmap -o ./engagement
+reconowl "https://target.tld/item.php?id=1" -y --sqlmap -o ./engagement
 
 # Diff this scan against a previous run:
-strix target.tld -y --diff ./engagement/report.json
+reconowl target.tld -y --diff ./engagement/report.json
 
 # Diff two saved reports without scanning:
-strix --diff-reports old/report.json new/report.json
+reconowl --diff-reports old/report.json new/report.json
 ```
 
 ### Authenticated scanning
@@ -236,18 +236,18 @@ Send a session cookie, bearer token, or arbitrary headers so every check (native
 and orchestrated `httpx`/`nuclei`/`sqlmap`) runs authenticated:
 
 ```bash
-strix https://app.tld -y --cookie "session=eyJ...; role=admin"
-strix https://api.tld -y --bearer "eyJhbGciOi..."
-strix https://app.tld -y -H "X-Api-Key: abc123" -H "X-Env: staging"
-strix https://app.tld -y --auth-basic admin:s3cr3t
+reconowl https://app.tld -y --cookie "session=eyJ...; role=admin"
+reconowl https://api.tld -y --bearer "eyJhbGciOi..."
+reconowl https://app.tld -y -H "X-Api-Key: abc123" -H "X-Env: staging"
+reconowl https://app.tld -y --auth-basic admin:s3cr3t
 ```
 
-**Automated form login** — Strix fetches the login page, fills the form
+**Automated form login** — reconowl fetches the login page, fills the form
 (preserving CSRF/hidden fields), captures the session, and crawls + scans the
 authenticated area (avoiding logout links to keep the session alive):
 
 ```bash
-strix https://app.tld -y \
+reconowl https://app.tld -y \
   --login-url https://app.tld/login --login-user admin --login-pass 's3cr3t'
 # fields are auto-detected; override with --login-user-field / --login-pass-field,
 # and confirm success with --login-check "Dashboard".
@@ -259,10 +259,10 @@ Key options: `-i/--intensity {light,normal,aggressive}`, `--formats html,json,md
 
 ## Output
 
-Reports are written to `strix-report/` (or `-o <dir>`):
+Reports are written to `reconowl-report/` (or `-o <dir>`):
 
 ```
-strix-report/
+reconowl-report/
   report.html   # styled, self-contained
   report.json   # full machine-readable result
   report.md     # Markdown summary
@@ -273,12 +273,12 @@ strix-report/
 Emit SARIF and upload it so findings appear in the repo's Security tab:
 
 ```bash
-strix https://staging.tld -y --formats sarif -o out
+reconowl https://staging.tld -y --formats sarif -o out
 ```
 
 ```yaml
-# .github/workflows/strix.yml (excerpt)
-- run: strix "$TARGET" -y --formats sarif -o out
+# .github/workflows/reconowl.yml (excerpt)
+- run: reconowl "$TARGET" -y --formats sarif -o out
 - uses: github/codeql-action/upload-sarif@v3
   with:
     sarif_file: out/report.sarif

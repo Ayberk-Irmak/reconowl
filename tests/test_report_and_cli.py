@@ -4,10 +4,10 @@ from __future__ import annotations
 
 import json
 
-from strix.cli import parse_target
-from strix.models import Finding, Port, ScanResult, Severity, Target, WebEndpoint
-from strix.report import html as html_report
-from strix.report import json_report, markdown
+from reconowl.cli import parse_target
+from reconowl.models import Finding, Port, ScanResult, Severity, Target, WebEndpoint
+from reconowl.report import html as html_report
+from reconowl.report import json_report, markdown
 
 
 def _sample() -> ScanResult:
@@ -48,7 +48,7 @@ def test_json_report_roundtrip():
 
 def test_markdown_report_contains_findings():
     md = markdown.render(_sample())
-    assert "# Strix report" in md
+    assert "# reconowl report" in md
     assert "SQLi candidate" in md
     assert "| High |" in md or "High" in md
     assert "443/tcp" in md
@@ -60,7 +60,7 @@ def test_html_report_renders_and_escapes():
                           category="x", location="https://example.com"))
     out = html_report.render(r)
     assert "<!doctype html>" in out.lower()
-    assert "Strix" in out and "example.com" in out
+    assert "reconowl" in out and "example.com" in out
     # user-controlled title must be escaped, not injected
     assert "<script>evil" not in out
     assert "&lt;script&gt;evil" in out

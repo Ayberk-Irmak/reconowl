@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from strix.models import ScanResult, Target
-from strix.scan import crlf
-from strix.utils.net import HttpResponse
+from reconowl.models import ScanResult, Target
+from reconowl.scan import crlf
+from reconowl.utils.net import HttpResponse
 
 
 def _resp(headers):
@@ -12,12 +12,12 @@ def _resp(headers):
 
 
 def test_detect_injected_header():
-    resp = _resp({"Location": "x", "X-Strix-CRLF": "strixcrlf1"})
+    resp = _resp({"Location": "x", "X-reconowl-CRLF": "reconowlcrlf1"})
     assert crlf.detect(resp) == "header"
 
 
 def test_detect_injected_cookie():
-    resp = _resp({"Set-Cookie": "strixcrlf=strixcrlf1; Path=/"})
+    resp = _resp({"Set-Cookie": "reconowlcrlf=reconowlcrlf1; Path=/"})
     assert crlf.detect(resp) == "cookie"
 
 

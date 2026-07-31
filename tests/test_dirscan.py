@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from strix.models import Severity
-from strix.scan import dirscan
+from reconowl.models import Severity
+from reconowl.scan import dirscan
 
 
 def test_load_wordlist_skips_comments_and_dupes(tmp_path):

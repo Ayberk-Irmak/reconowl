@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from strix.external import httpx_tool, nmap
-from strix.models import Severity
-from strix.scan import nuclei_scan
+from reconowl.external import httpx_tool, nmap
+from reconowl.models import Severity
+from reconowl.scan import nuclei_scan
 
 _NMAP_XML = """<?xml version="1.0"?>
 <nmaprun>

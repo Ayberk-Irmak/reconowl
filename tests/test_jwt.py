@@ -7,9 +7,9 @@ import hashlib
 import hmac
 import json
 
-from strix.models import ScanResult, Severity, Target
-from strix.scan import jwt as jwtcheck
-from strix.utils.net import HttpResponse
+from reconowl.models import ScanResult, Severity, Target
+from reconowl.scan import jwt as jwtcheck
+from reconowl.utils.net import HttpResponse
 
 
 def _b64(obj) -> str:

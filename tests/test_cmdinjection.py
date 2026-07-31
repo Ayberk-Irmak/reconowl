@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
-from strix.config import ScanConfig
-from strix.models import ScanResult, Target
-from strix.scan import cmdinjection as cmdi
-from strix.utils.net import HttpResponse
+from reconowl.config import ScanConfig
+from reconowl.models import ScanResult, Target
+from reconowl.scan import cmdinjection as cmdi
+from reconowl.utils.net import HttpResponse
 
 
 def test_detect_output_id_pattern():

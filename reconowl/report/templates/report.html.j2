@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>reconowl report — {{ target.host or target.raw }}</title>
+<style>
+  :root {
+    --bg:#0f1115; --panel:#171a21; --panel2:#1e222b; --border:#2a2f3a;
+    --text:#e6e8ec; --muted:#98a0ae; --accent:#b06cf0;
+    --critical:#e5484d; --high:#ff6b3d; --medium:#f5a623; --low:#3ba7f0; --info:#6b7280;
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--text);
+    font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; }
+  a { color:var(--accent); }
+  .wrap { max-width:1000px; margin:0 auto; padding:32px 20px 80px; }
+  header.top { display:flex; align-items:baseline; gap:14px; flex-wrap:wrap;
+    border-bottom:1px solid var(--border); padding-bottom:18px; margin-bottom:24px; }
+  header.top h1 { margin:0; font-size:26px; letter-spacing:.5px; }
+  header.top .tag { color:var(--accent); font-weight:700; }
+  .meta { color:var(--muted); font-size:13px; }
+  .meta code { color:var(--text); }
+  .cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:12px; margin:22px 0; }
+  .card { background:var(--panel); border:1px solid var(--border); border-radius:10px; padding:14px 16px; }
+  .card .n { font-size:26px; font-weight:700; }
+  .card .l { color:var(--muted); font-size:12px; text-transform:uppercase; letter-spacing:.6px; }
+  .sev-critical { color:var(--critical); } .sev-high { color:var(--high); }
+  .sev-medium { color:var(--medium); } .sev-low { color:var(--low); } .sev-info { color:var(--info); }
+  .badge { display:inline-block; padding:2px 9px; border-radius:20px; font-size:11px; font-weight:700;
+    text-transform:uppercase; letter-spacing:.5px; color:#0b0d11; }
+  .b-critical { background:var(--critical); color:#fff; } .b-high { background:var(--high); }
+  .b-medium { background:var(--medium); } .b-low { background:var(--low); } .b-info { background:var(--info); color:#fff; }
+  h2 { margin:34px 0 12px; font-size:18px; border-left:3px solid var(--accent); padding-left:10px; }
+  .finding { background:var(--panel); border:1px solid var(--border); border-left-width:4px;
+    border-radius:8px; padding:14px 16px; margin:12px 0; }
+  .finding.f-critical { border-left-color:var(--critical); } .finding.f-high { border-left-color:var(--high); }
+  .finding.f-medium { border-left-color:var(--medium); } .finding.f-low { border-left-color:var(--low); }
+  .finding.f-info { border-left-color:var(--info); }
+  .finding h3 { margin:0 0 6px; font-size:15px; display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+  .cvss { font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:12px;
+    background:var(--panel2); border:1px solid var(--border); border-radius:6px; padding:1px 7px; }
+  .finding .loc { color:var(--accent); font-size:12.5px; word-break:break-all; }
+  .finding .row { color:var(--muted); font-size:13px; margin:4px 0; }
+  .finding .row b { color:var(--text); font-weight:600; }
+  .finding code, .mono { font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:12.5px; }
+  .evidence { background:var(--panel2); border:1px solid var(--border); border-radius:6px;
+    padding:8px 10px; margin-top:6px; overflow-x:auto; white-space:pre-wrap; word-break:break-word; }
+  table { width:100%; border-collapse:collapse; margin:10px 0; font-size:13.5px; }
+  th,td { text-align:left; padding:8px 10px; border-bottom:1px solid var(--border); }
+  th { color:var(--muted); font-weight:600; text-transform:uppercase; font-size:11px; letter-spacing:.5px; }
+  td.mono { color:var(--text); }
+  .pill { display:inline-block; background:var(--panel2); border:1px solid var(--border);
+    border-radius:16px; padding:3px 10px; margin:3px 4px 0 0; font-size:12.5px; }
+  details summary { cursor:pointer; color:var(--muted); margin:8px 0; }
+  footer { margin-top:50px; color:var(--muted); font-size:12px; border-top:1px solid var(--border); padding-top:16px; }
+  .empty { color:var(--muted); font-style:italic; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <h1><span class="tag">reconowl</span> {{ target.host or target.raw }}</h1>
+    <span class="meta">recon → scan → report</span>
+  </header>
+
+  <div class="meta">
+    <div>Target: <code>{{ target.raw }}</code>{% if target.ip %} &nbsp;·&nbsp; IP: <code>{{ target.ip }}</code>{% endif %}</div>
+    <div>Started {{ started_at }} &nbsp;·&nbsp; finished {{ finished_at }}</div>
+    {% if tools_used %}<div>Tools: {% for t in tools_used %}<span class="pill">{{ t }}</span>{% endfor %}</div>{% endif %}
+  </div>
+
+  <div class="cards">
+    {% for sev in severities %}
+    <div class="card">
+      <div class="n sev-{{ sev|lower }}">{{ counts[sev] }}</div>
+      <div class="l">{{ sev }}</div>
+    </div>
+    {% endfor %}
+  </div>
+  <div class="cards">
+    <div class="card"><div class="n">{{ '%.1f'|format(max_cvss) }}</div><div class="l">Max CVSS</div></div>
+    <div class="card"><div class="n">{{ subdomains|length }}</div><div class="l">Subdomains</div></div>
+    <div class="card"><div class="n">{{ ports|length }}</div><div class="l">Open ports</div></div>
+    <div class="card"><div class="n">{{ endpoints|length }}</div><div class="l">Endpoints</div></div>
+    <div class="card"><div class="n">{{ urls|length }}</div><div class="l">URLs</div></div>
+  </div>
+
+  <h2>Findings</h2>
+  {% if not findings %}<p class="empty">No findings.</p>{% endif %}
+  {% for f in findings %}
+  <div class="finding f-{{ f.severity_l }}">
+    <h3><span class="badge b-{{ f.severity_l }}">{{ f.severity }}</span>
+        {% if f.cvss_score is not none %}<span class="cvss" title="{{ f.cvss_vector }}">CVSS {{ '%.1f'|format(f.cvss_score) }}</span>{% endif %}
+        {{ f.title }}</h3>
+    {% if f.location %}<div class="loc mono">{{ f.location }}</div>{% endif %}
+    {% if f.description %}<div class="row">{{ f.description }}</div>{% endif %}
+    <div class="row"><b>Category:</b> <code>{{ f.category }}</code> &nbsp; <b>Source:</b> <code>{{ f.source }}</code></div>
+    {% if f.remediation %}<div class="row"><b>Remediation:</b> {{ f.remediation }}</div>{% endif %}
+    {% if f.evidence %}<div class="evidence mono">{{ f.evidence }}</div>{% endif %}
+    {% if f.proof and f.proof.request %}
+    <details><summary>Proof — request / response</summary>
+    <div class="evidence mono">{{ f.proof.request }}
+
+{{ f.proof.response }}</div>
+    </details>
+    {% endif %}
+    {% if f.references %}<div class="row"><b>References:</b> {% for r in f.references %}<a href="{{ r }}">{{ r }}</a> {% endfor %}</div>{% endif %}
+  </div>
+  {% endfor %}
+
+  <h2>Reconnaissance</h2>
+  {% if ports %}
+  <h3>Open ports</h3>
+  <table><thead><tr><th>Port</th><th>Service</th><th>Product</th><th>Version</th></tr></thead><tbody>
+    {% for p in ports %}<tr><td class="mono">{{ p.number }}/{{ p.protocol }}</td><td>{{ p.service }}</td><td>{{ p.product }}</td><td>{{ p.version }}</td></tr>{% endfor %}
+  </tbody></table>
+  {% endif %}
+
+  {% if endpoints %}
+  <h3>Web endpoints</h3>
+  <table><thead><tr><th>Status</th><th>URL</th><th>Title</th><th>Server</th></tr></thead><tbody>
+    {% for e in endpoints %}<tr><td>{{ e.status }}</td><td class="mono">{{ e.url }}</td><td>{{ e.title }}</td><td>{{ e.server }}</td></tr>{% endfor %}
+  </tbody></table>
+  {% endif %}
+
+  {% if tls %}
+  <h3>TLS</h3>
+  <table><tbody>
+    {% for k in ['subject_cn','issuer_org','protocol','cipher','not_after','days_to_expiry','trusted','self_signed'] %}
+    {% if tls.get(k) is not none %}<tr><th>{{ k }}</th><td class="mono">{{ tls.get(k) }}</td></tr>{% endif %}
+    {% endfor %}
+  </tbody></table>
+  {% endif %}
+
+  {% if subdomains %}
+  <h3>Subdomains ({{ subdomains|length }})</h3>
+  <div>{% for s in subdomains %}<span class="pill mono">{{ s }}</span>{% endfor %}</div>
+  {% endif %}
+
+  {% if dns_records %}
+  <h3>DNS records</h3>
+  <table><tbody>
+    {% for rtype, values in dns_records.items() %}<tr><th>{{ rtype }}</th><td class="mono">{{ values|join(', ') }}</td></tr>{% endfor %}
+  </tbody></table>
+  {% endif %}
+
+  {% if urls %}
+  <details><summary>Discovered URLs ({{ urls|length }})</summary>
+  <div class="evidence mono">{% for u in urls %}{{ u }}
+{% endfor %}</div></details>
+  {% endif %}
+
+  {% if errors %}
+  <details><summary>Scan warnings ({{ errors|length }})</summary>
+  <div class="evidence mono">{% for e in errors %}{{ e }}
+{% endfor %}</div></details>
+  {% endif %}
+
+  <footer>Generated by reconowl v{{ version }} · for authorized security testing only.</footer>
+</div>
+</body>
+</html>

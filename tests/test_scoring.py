@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from strix import scoring
-from strix.models import Finding, Severity
+from reconowl import scoring
+from reconowl.models import Finding, Severity
 
 
 def test_reference_base_scores():

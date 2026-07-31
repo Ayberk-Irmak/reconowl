@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from strix.models import Severity
-from strix.scan import cors, redirect
+from reconowl.models import Severity
+from reconowl.scan import cors, redirect
 
 
 # --- CORS ------------------------------------------------------------------ #

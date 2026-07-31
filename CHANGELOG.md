@@ -1,10 +1,19 @@
 # Changelog
 
-All notable changes to Strix are documented here. The format is based on
+All notable changes to reconowl are documented here. The format is based on
 [Keep a Changelog](https://keepachangelog.com/) and this project adheres to
 [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
+
+## [0.3.0] - 2026-07-31
+
+### Changed
+- **Renamed the project from `strix` to `reconowl`** to avoid a crowded namespace
+  (multiple unrelated "Strix" security projects). The PyPI package is now
+  `reconowl` (`pip install reconowl`), the CLI command is `reconowl`, and the repo
+  is `github.com/Ayberk-Irmak/reconowl`. No functional changes — same 28 native
+  checks and pipeline. The former `strix-scanner` package is discontinued.
 
 ## [0.2.1] - 2026-07-31
 
@@ -12,7 +21,7 @@ All notable changes to Strix are documented here. The format is based on
 - Scan truncation is no longer silent: when the vuln-scan time budget is reached,
   or the web server is unreachable, the skipped checks are recorded in the report
   (`errors`). When web ports (80/443/8080/8443) are open but the server returns no
-  HTTP response, Strix now reports a likely rate-limit/IP-block instead of a bare
+  HTTP response, reconowl now reports a likely rate-limit/IP-block instead of a bare
   "unreachable".
 - Directory brute-force now runs **last** among native checks, so under a tight
   time budget the high-value injection/exploitation checks run first and the
@@ -43,7 +52,7 @@ All notable changes to Strix are documented here. The format is based on
   discovered login forms (CSRF/hidden fields preserved, compared to a known-bad
   baseline); hits are CRITICAL. `--no-default-creds` to disable.
 - WAF/CDN detection (wafw00f + native fingerprinting) and adaptive rate-limit
-  handling: Strix backs off, then gives up hammering, when the target blocks or
+  handling: reconowl backs off, then gives up hammering, when the target blocks or
   rate-limits, and warns the operator. `--stealth` mode and `--no-adaptive`.
 - Request/response proof capture: each confirmed finding records the exact
   triggering HTTP request and response (auth headers/cookies redacted), rendered

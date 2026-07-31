@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from strix.models import ScanResult, Target
-from strix.scan import lfi
-from strix.utils.net import HttpResponse
+from reconowl.models import ScanResult, Target
+from reconowl.scan import lfi
+from reconowl.utils.net import HttpResponse
 
 
 def test_detect_linux_passwd():
@@ -43,7 +43,7 @@ def test_check_detects_traversal():
     class UI:
         def info(self, m): pass
 
-    from strix.config import ScanConfig
+    from reconowl.config import ScanConfig
     findings = lfi.check(r, ScanConfig(), Client(), UI())
     assert findings and findings[0].category == "lfi"
     assert findings[0].severity.name == "HIGH"

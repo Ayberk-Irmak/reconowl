@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
-from strix.config import ScanConfig
-from strix.models import ScanResult, Target
-from strix.recon import crawler, render
-from strix.recon.render import RenderedPage
+from reconowl.config import ScanConfig
+from reconowl.models import ScanResult, Target
+from reconowl.recon import crawler, render
+from reconowl.recon.render import RenderedPage
 
 
 def test_looks_like_spa_shell():
@@ -34,13 +34,13 @@ def _harness(host="a.com"):
     known = set()
 
     def add(url):
-        from strix.utils.net import in_scope
+        from reconowl.utils.net import in_scope
         if url not in known and in_scope(url, host):
             known.add(url)
             result.urls.append(url)
 
     def add_form(form):
-        from strix.utils.net import in_scope
+        from reconowl.utils.net import in_scope
         if in_scope(form.url, host):
             result.forms.append(form)
 

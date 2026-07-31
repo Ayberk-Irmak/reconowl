@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 
-from strix import diffing
+from reconowl import diffing
 
 
 def _f(cat, loc, title, sev="High", cvss=7.5):
@@ -49,7 +49,7 @@ def test_render_markdown_sections():
     old = [_f("lfi", "u3", "LFI")]
     new = [_f("ssrf", "u4", "SSRF")]
     md = diffing.render_markdown(diffing.diff_findings(old, new), "old.json", "new.json")
-    assert "# Strix scan diff" in md
+    assert "# reconowl scan diff" in md
     assert "New findings (1)" in md and "SSRF" in md
     assert "Fixed findings (1)" in md and "LFI" in md
 

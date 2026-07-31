@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from strix.models import Severity
-from strix.scan import headers, injection
-from strix.utils.net import HttpResponse, in_scope
+from reconowl.models import Severity
+from reconowl.scan import headers, injection
+from reconowl.utils.net import HttpResponse, in_scope
 
 
 def _resp(url, hdrs, status=200):
@@ -77,7 +77,7 @@ def test_in_scope_keeps_target_and_siblings_rejects_others():
 
 
 def test_apex_domain_handles_multi_label_suffixes():
-    from strix.utils.net import apex_domain
+    from reconowl.utils.net import apex_domain
     assert apex_domain("insuyu.com.tr") == "insuyu.com.tr"
     assert apex_domain("www.insuyu.com.tr") == "insuyu.com.tr"
     assert apex_domain("bbc.co.uk") == "bbc.co.uk"

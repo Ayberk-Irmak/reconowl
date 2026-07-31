@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from strix.models import ScanResult, Target
-from strix.scan import takeover
-from strix.utils.net import HttpResponse
+from reconowl.models import ScanResult, Target
+from reconowl.scan import takeover
+from reconowl.utils.net import HttpResponse
 
 _FPS = [
     {"service": "GitHub Pages", "cnames": ["github.io"],
@@ -82,5 +82,5 @@ def test_check_detects_github_takeover(monkeypatch):
 
 
 def _cfg():
-    from strix.config import ScanConfig
+    from reconowl.config import ScanConfig
     return ScanConfig(concurrency=4)
