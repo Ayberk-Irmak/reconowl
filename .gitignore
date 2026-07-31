@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+env/
+
+# Test / tooling
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# Strix output
+strix-report/
+*.log
+diff.json
+diff.md
+
+# Editors / OS
+.idea/
+.vscode/
+*.swp
+.DS_Store
