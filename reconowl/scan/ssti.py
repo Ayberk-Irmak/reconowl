@@ -15,7 +15,6 @@ from ..utils.concurrency import parallel_map
 from ..utils.net import HttpClient, build_proof, in_scope
 from . import injpoints
 from ._common import point_baselines
-from .redirect import _set_param
 
 _SOURCE = "native:ssti"
 

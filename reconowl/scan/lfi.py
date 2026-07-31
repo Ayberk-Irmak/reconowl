@@ -16,7 +16,6 @@ from ..utils.concurrency import parallel_map
 from ..utils.net import HttpClient, build_proof, in_scope
 from . import injpoints
 from ._common import point_baselines
-from .crlf import _inject  # raw param injection that preserves %-encoding
 
 _SOURCE = "native:lfi"
 

@@ -97,7 +97,7 @@ def render_pages(urls: list[str], config, ui=None) -> list[RenderedPage]:
                 xhr: list[str] = []
                 page.on(
                     "request",
-                    lambda req: xhr.append(req.url)
+                    lambda req, _x=xhr: _x.append(req.url)
                     if req.resource_type in ("xhr", "fetch") else None,
                 )
                 try:

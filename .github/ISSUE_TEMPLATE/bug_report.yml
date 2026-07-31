@@ -1,0 +1,48 @@
+name: Bug report
+description: Report a defect in reconowl (a crash, wrong result, or false positive/negative)
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve reconowl. **Do not paste scan output for targets you
+        are not authorized to test**, and redact any hostnames, credentials, or tokens.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What did reconowl do, and what did you expect instead?
+      placeholder: "e.g. The SSTI check reported a finding on a page with no template engine."
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      description: The exact command and, if possible, a minimal target that triggers it.
+      placeholder: |
+        reconowl https://my-lab.local -y --no-external
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: reconowl version
+      description: Output of `reconowl --version`.
+      placeholder: "reconowl 0.3.0"
+    validations:
+      required: true
+  - type: input
+    id: python
+    attributes:
+      label: Python version & OS
+      placeholder: "Python 3.12 on Kali Linux"
+    validations:
+      required: true
+  - type: checkboxes
+    id: auth
+    attributes:
+      label: Authorization
+      options:
+        - label: Any target referenced here is one I own or am authorized to test.
+          required: true

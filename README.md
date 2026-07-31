@@ -27,6 +27,35 @@ reconowl example.com -y
 > scan until you confirm authorization (interactively, or with `-y`/`--authorize`).
 > You are solely responsible for how you use it.
 
+## Example
+
+A run against an authorized target looks like this (output abbreviated):
+
+```text
+      ,___,                              _
+      (O,O)    _ _ ___ __ ___ _ _  _____ __ _| |
+      /)__)   | '_/ -_) _/ _ \ ' \/ _ \ V  V / |
+      -"-"-   |_| \___\__\___/_||_\___/\_/\_/|_|
+
+  recon → scan → report   v0.3.0
+
+╭ Phase 1 · Passive reconnaissance ╮
+✓ DNS: A(1), MX(1), NS(2), TXT(3)     ✓ Subdomains: 4     ✓ Archived URLs: 118
+╭ Phase 2 · Active reconnaissance ╮
+✓ Open ports: 80/http, 443/https      ✓ Crawl: 22 pages, 9 forms
+╭ Phase 3 · Vulnerability scanning ╮
+✓ OpenAPI: parsed 31 operations from /openapi.json  (+18 URL, +6 form)
+   HIGH    9.8  SQL injection (query: id)            https://target.tld/item?id=1
+   HIGH    7.5  Reflected XSS (query: q)             https://target.tld/search?q=1
+   MEDIUM  6.1  Missing security headers (CSP, HSTS) https://target.tld
+
+Findings by severity:  Critical 0 · High 2 · Medium 5 · Low 3 · Info 7
+✓ HTML/JSON/Markdown reports written to ./reconowl-report/
+```
+
+Every confirmed finding carries a CVSS score and the exact request/response that
+proved it (auth headers redacted). *Values above are illustrative.*
+
 ## Features
 
 **Phase 1 — Passive recon** (no packets to the target)

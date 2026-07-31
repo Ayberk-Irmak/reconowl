@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 
-from reconowl.models import Form, ScanResult, Target, WebEndpoint
+from reconowl.models import Form, ScanResult, Target
 from reconowl.scan import injpoints
 from reconowl.utils.net import HttpResponse
 

@@ -77,7 +77,6 @@ def test_feed_adds_urls_and_forms():
 
 
 def _client(spec_url, doc_text):
-    import json as _j
     class Client:
         def get(self, url, **k):
             if url == spec_url:
