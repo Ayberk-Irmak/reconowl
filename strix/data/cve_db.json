@@ -1,0 +1,85 @@
+[
+  {
+    "product": "apache httpd",
+    "aliases": ["apache", "httpd", "apache2", "apache-httpd"],
+    "cves": [
+      {"id": "CVE-2021-42013", "range": ">=2.4.49,<2.4.51", "cvss": 9.8, "severity": "Critical", "desc": "Path traversal and RCE via mod_cgi / mod_alias"},
+      {"id": "CVE-2021-41773", "range": ">=2.4.49,<2.4.50", "cvss": 7.5, "severity": "High", "desc": "Path traversal in Apache 2.4.49"},
+      {"id": "CVE-2019-0211", "range": "<2.4.39", "cvss": 7.8, "severity": "High", "desc": "Local privilege escalation via scoreboard"},
+      {"id": "CVE-2017-15715", "range": "<2.4.30", "cvss": 8.1, "severity": "High", "desc": "<FilesMatch> newline bypass allowing malicious upload execution"},
+      {"id": "CVE-2017-9798", "range": "<2.4.28", "cvss": 7.5, "severity": "High", "desc": "Optionsbleed use-after-free memory disclosure"}
+    ]
+  },
+  {
+    "product": "nginx",
+    "aliases": ["nginx"],
+    "cves": [
+      {"id": "CVE-2021-23017", "range": "<1.21.0", "cvss": 8.1, "severity": "High", "desc": "Off-by-one in the DNS resolver"},
+      {"id": "CVE-2019-20372", "range": ">=0.7.12,<1.17.7", "cvss": 5.3, "severity": "Medium", "desc": "HTTP request smuggling via error_page"},
+      {"id": "CVE-2013-2028", "range": ">=1.3.9,<=1.4.0", "cvss": 7.5, "severity": "High", "desc": "Stack buffer overflow in chunked transfer decoding"}
+    ]
+  },
+  {
+    "product": "openssh",
+    "aliases": ["openssh", "opensshd", "ssh"],
+    "cves": [
+      {"id": "CVE-2024-6387", "range": ">=8.5,<9.8", "cvss": 8.1, "severity": "High", "desc": "regreSSHion: signal handler race condition RCE"},
+      {"id": "CVE-2018-15473", "range": "<7.7", "cvss": 5.3, "severity": "Medium", "desc": "Username enumeration via malformed auth requests"},
+      {"id": "CVE-2016-0777", "range": ">=5.4,<7.1", "cvss": 6.5, "severity": "Medium", "desc": "Client information leak / private key disclosure via roaming"}
+    ]
+  },
+  {
+    "product": "php",
+    "aliases": ["php", "php-fpm", "php-cgi"],
+    "cves": [
+      {"id": "CVE-2019-11043", "range": ">=7.0,<7.3.11", "cvss": 9.8, "severity": "Critical", "desc": "php-fpm remote code execution (underflow)"},
+      {"id": "CVE-2012-1823", "range": "<5.4.2", "cvss": 9.8, "severity": "Critical", "desc": "php-cgi query-string argument injection (RCE)"},
+      {"id": "CVE-2015-4024", "range": "<5.5.25", "cvss": 5.3, "severity": "Medium", "desc": "Multipart parsing DoS"}
+    ]
+  },
+  {
+    "product": "openssl",
+    "aliases": ["openssl"],
+    "cves": [
+      {"id": "CVE-2014-0160", "range": ">=1.0.1,<1.0.1.7", "cvss": 7.5, "severity": "High", "desc": "Heartbleed: TLS heartbeat memory disclosure"},
+      {"id": "CVE-2016-2107", "range": "<1.0.2.8", "cvss": 5.9, "severity": "Medium", "desc": "AES-NI CBC padding oracle"}
+    ]
+  },
+  {
+    "product": "proftpd",
+    "aliases": ["proftpd"],
+    "cves": [
+      {"id": "CVE-2019-12815", "range": "<1.3.6.1", "cvss": 9.8, "severity": "Critical", "desc": "mod_copy arbitrary file copy / RCE"},
+      {"id": "CVE-2015-3306", "range": ">=1.3.5,<1.3.5.1", "cvss": 10.0, "severity": "Critical", "desc": "mod_copy remote code execution"}
+    ]
+  },
+  {
+    "product": "vsftpd",
+    "aliases": ["vsftpd"],
+    "cves": [
+      {"id": "CVE-2011-2523", "range": "==2.3.4", "cvss": 9.8, "severity": "Critical", "desc": "Backdoor command execution in vsftpd 2.3.4"}
+    ]
+  },
+  {
+    "product": "apache tomcat",
+    "aliases": ["tomcat", "apache-tomcat", "coyote"],
+    "cves": [
+      {"id": "CVE-2020-1938", "range": "<9.0.31", "cvss": 9.8, "severity": "Critical", "desc": "Ghostcat: AJP file read / inclusion leading to RCE"}
+    ]
+  },
+  {
+    "product": "jquery",
+    "aliases": ["jquery"],
+    "cves": [
+      {"id": "CVE-2020-11022", "range": "<3.5.0", "cvss": 6.1, "severity": "Medium", "desc": "XSS via jQuery.htmlPrefilter"},
+      {"id": "CVE-2019-11358", "range": "<3.4.0", "cvss": 6.1, "severity": "Medium", "desc": "Prototype pollution via jQuery.extend"}
+    ]
+  },
+  {
+    "product": "exim",
+    "aliases": ["exim", "exim4"],
+    "cves": [
+      {"id": "CVE-2019-10149", "range": ">=4.87,<4.92", "cvss": 9.8, "severity": "Critical", "desc": "Remote command execution via crafted recipient"}
+    ]
+  }
+]
