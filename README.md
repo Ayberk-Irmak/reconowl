@@ -1,5 +1,6 @@
 # Strix
 
+[![CI](https://github.com/Ayberk-Irmak/strix/actions/workflows/ci.yml/badge.svg)](https://github.com/Ayberk-Irmak/strix/actions/workflows/ci.yml)
 [![PyPI](https://img.shields.io/pypi/v/strix-scanner)](https://pypi.org/project/strix-scanner/)
 ![python](https://img.shields.io/badge/python-3.10%2B-blue)
 ![license](https://img.shields.io/badge/license-MIT-green)
