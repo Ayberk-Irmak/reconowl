@@ -1,9 +1,10 @@
 # Strix
 
+[![PyPI](https://img.shields.io/pypi/v/strix-scanner)](https://pypi.org/project/strix-scanner/)
 ![python](https://img.shields.io/badge/python-3.10%2B-blue)
 ![license](https://img.shields.io/badge/license-MIT-green)
 ![checks](https://img.shields.io/badge/native%20checks-28-8a2be2)
-![tests](https://img.shields.io/badge/tests-206-brightgreen)
+![tests](https://img.shields.io/badge/tests-209-brightgreen)
 
 **Recon → scan → report, in one command.** Strix is a CLI penetration-testing
 orchestrator: point it at a target and it runs passive + active reconnaissance,
@@ -180,18 +181,21 @@ so checks reach authenticated surface area — or let Strix **log in for you**
 ## Install
 
 ```bash
-git clone https://github.com/Ayberk-Irmak/strix.git && cd strix
-pip install -e .            # installs the `strix` command + dependencies
+pip install strix-scanner        # from PyPI — installs the `strix` command
 strix --help
-
-# Optional: enable SPA/JS rendering (headless browser)
-pip install -e ".[render]" && playwright install chromium
 ```
 
-Or run without installing:
+Optional **headless browser** for SPA/JS rendering:
 
 ```bash
-pip install -r requirements.txt
+pip install "strix-scanner[render]" && playwright install chromium
+```
+
+From source (for development):
+
+```bash
+git clone https://github.com/Ayberk-Irmak/strix.git && cd strix
+pip install -e .
 python -m strix --help
 ```
 
