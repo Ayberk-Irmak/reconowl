@@ -53,4 +53,5 @@ def test_classify_sensitive_200_is_low():
 
 def test_classify_generic_200_is_info():
     f = dirscan._classify("home", "http://a/home", 200, "welcome")
-    assert f is not None and f.severity is Severity.INFO and f.category == "dir-found"
+    # Benign accessible paths score INFO/0.0 (category not caught by the "dir-" vector).
+    assert f is not None and f.severity is Severity.INFO and f.category == "path-accessible"

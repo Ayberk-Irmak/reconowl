@@ -134,7 +134,10 @@ def _classify(word: str, url: str, status: int, text: str) -> Finding | None:
             title=f"Accessible path: /{word}",
             severity=Severity.LOW if sensitive else Severity.INFO,
             target="",
-            category="dir-found" if not sensitive else "dir-found-sensitive",
+            # Sensitive hits keep the scored "dir-" vector; benign accessible paths
+            # (/images, /robots.txt, …) use a category that scores INFO/0.0 so they
+            # don't masquerade as mid-severity noise at the top of the report.
+            category="dir-found-sensitive" if sensitive else "path-accessible",
             location=url,
             description=f"{url} is reachable (HTTP {status}).",
             remediation="Verify the path should be publicly reachable.",

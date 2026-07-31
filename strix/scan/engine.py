@@ -50,7 +50,6 @@ _NATIVE_CHECKS = (
     ("Secrets in JavaScript", secrets.check),
     ("Exposed sensitive files", exposures.check),
     ("API spec (OpenAPI/Swagger)", openapi.check),
-    ("Directory brute-force", dirscan.check),
     ("CORS misconfiguration", cors.check),
     ("Open redirect", redirect.check),
     ("Host-header injection", hostheader.check),
@@ -68,6 +67,11 @@ _NATIVE_CHECKS = (
     ("Injection probes", injection.check),
     ("Broken access control / IDOR", access_control.check),
     ("Default credentials", default_creds.check),
+    # Directory brute-force is deliberately LAST among native checks: it is the
+    # most request-heavy and lowest-yield, so under a tight time budget the
+    # high-value injection/exploitation checks above run first and this is what
+    # gets truncated — not the other way around.
+    ("Directory brute-force", dirscan.check),
 )
 
 
@@ -114,20 +118,40 @@ def run(result: ScanResult, config: ScanConfig, ui) -> None:
 
     reachable = _web_reachable(result, client)
     if not reachable:
-        ui.warn(
-            "Target web server is not reachable — skipping HTTP vulnerability "
-            "checks (running only host-independent checks)."
-        )
+        # An open 80/443 that nonetheless refuses HTTP is a strong "you are being
+        # blocked / rate-limited" signal (WAF/fail2ban), not a dead site.
+        web_ports_open = any(p.number in (80, 443, 8080, 8443) and p.state == "open"
+                             for p in result.ports)
+        if web_ports_open:
+            msg = ("Web ports (80/443) are open but the server returned no HTTP "
+                   "response — you are likely rate-limited or IP-blocked (WAF/fail2ban). "
+                   "Skipping HTTP checks. Wait, use --stealth, or scan from another IP.")
+        else:
+            msg = ("Target web server is not reachable — skipping HTTP vulnerability "
+                   "checks (running only host-independent checks).")
+        ui.warn(msg)
+        result.errors.append("scan incomplete: web server unreachable — "
+                             + ("likely blocked/rate-limited; " if web_ports_open else "")
+                             + "all HTTP checks skipped")
 
     deadline = time.monotonic() + config.max_scan_seconds
     collected: list[Finding] = []
-    for name, check in _NATIVE_CHECKS:
+    for idx, (name, check) in enumerate(_NATIVE_CHECKS):
         if not reachable and name not in _WEB_INDEPENDENT:
             continue
         if time.monotonic() > deadline:
+            # Record exactly which checks did NOT run, so the report never reads
+            # as complete when it was truncated.
+            skipped = [n for n, _ in _NATIVE_CHECKS[idx:]
+                       if reachable or n in _WEB_INDEPENDENT]
             ui.warn(
                 f"Vulnerability-scan time budget ({config.max_scan_seconds:.0f}s) "
-                "reached — skipping remaining checks (raise with --max-time)."
+                f"reached — skipping {len(skipped)} remaining check(s): "
+                f"{', '.join(skipped)} (raise with --max-time)."
+            )
+            result.errors.append(
+                f"scan incomplete: time budget ({config.max_scan_seconds:.0f}s) reached, "
+                f"{len(skipped)} check(s) skipped: {', '.join(skipped)}"
             )
             break
         try:
@@ -145,6 +169,8 @@ def run(result: ScanResult, config: ScanConfig, ui) -> None:
             collected.extend(nuclei_scan.check(result, config, client, ui))
         except Exception as exc:  # noqa: BLE001
             result.errors.append(f"nuclei: {exc}")
+    elif reachable:
+        result.errors.append("scan incomplete: time budget reached before nuclei scan")
 
     if getattr(client, "was_throttled", False):
         ui.warn(
