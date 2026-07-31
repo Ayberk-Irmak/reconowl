@@ -6,6 +6,21 @@ All notable changes to Strix are documented here. The format is based on
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-07-31
+
+### Fixed
+- Scan truncation is no longer silent: when the vuln-scan time budget is reached,
+  or the web server is unreachable, the skipped checks are recorded in the report
+  (`errors`). When web ports (80/443/8080/8443) are open but the server returns no
+  HTTP response, Strix now reports a likely rate-limit/IP-block instead of a bare
+  "unreachable".
+- Directory brute-force now runs **last** among native checks, so under a tight
+  time budget the high-value injection/exploitation checks run first and the
+  request-heavy brute-force is what gets truncated — not the other way around.
+- `robots.txt` / `security.txt` are no longer scored with the high-impact
+  "exposure" CVSS vector (7.5 → INFO/0.0), and benign accessible paths from the
+  directory scan no longer masquerade as mid-severity noise at the top of reports.
+
 ## [0.2.0] - 2026-07-31
 
 ### Added

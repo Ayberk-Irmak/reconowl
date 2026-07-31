@@ -66,7 +66,9 @@ def check(result, config, client: HttpClient, ui) -> list[Finding]:
             title=title,
             severity=severity,
             target=result.target.host,
-            category="exposure",
+            # Benign informational files (robots.txt, security.txt) must not inherit
+            # the high-impact "exposure" CVSS vector meant for .git/.env/backups.
+            category="exposure" if severity != Severity.INFO else "info-file",
             location=url,
             description=f"{url} is reachable and returned HTTP 200.",
             remediation="Remove the file from the web root or block access to it.",
