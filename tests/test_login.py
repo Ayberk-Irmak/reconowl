@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from strix.recon import login
+from reconowl.recon import login
 
 
 def test_parse_login_form_detects_fields_and_hidden():

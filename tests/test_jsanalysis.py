@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from strix.models import ScanResult, Severity, Target
-from strix.recon import jsanalysis
-from strix.scan import secrets as secrets_check
+from reconowl.models import ScanResult, Severity, Target
+from reconowl.recon import jsanalysis
+from reconowl.scan import secrets as secrets_check
 
 
 def test_extract_endpoints_in_scope_only():

@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from strix.models import Port, ScanResult, Severity, Target, WebEndpoint
-from strix.scan import cve
+from reconowl.models import Port, ScanResult, Severity, Target, WebEndpoint
+from reconowl.scan import cve
 
 
 def test_parse_version_tolerant():

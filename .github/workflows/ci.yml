@@ -26,7 +26,7 @@ jobs:
           pip install ".[test]"
 
       - name: Compile all modules
-        run: python -m compileall -q strix
+        run: python -m compileall -q reconowl
 
       - name: Run tests
         run: pytest

@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
-from strix.config import ScanConfig
-from strix.models import ScanResult, Target
-from strix.scan import waf
-from strix.utils.net import HttpClient, HttpResponse
+from reconowl.config import ScanConfig
+from reconowl.models import ScanResult, Target
+from reconowl.scan import waf
+from reconowl.utils.net import HttpClient, HttpResponse
 
 
 def test_classify_outcomes():
@@ -63,7 +63,7 @@ def test_waf_check_behavioural():
 
     class Client:
         def get(self, url, **k):
-            if "strixwaf" in url:  # malicious probe blocked
+            if "reconowlwaf" in url:  # malicious probe blocked
                 return HttpResponse(url=url, ok=True, status=403, headers={}, text="blocked")
             return HttpResponse(url=url, ok=True, status=200, headers={}, text="ok")
 

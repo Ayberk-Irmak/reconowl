@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from strix.recon import crawler
+from reconowl.recon import crawler
 
 
 def test_extract_links_absolute_and_scope_agnostic():

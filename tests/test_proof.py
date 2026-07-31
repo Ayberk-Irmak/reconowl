@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from strix.utils.net import HttpResponse, build_proof
+from reconowl.utils.net import HttpResponse, build_proof
 
 
 def test_build_proof_includes_request_and_response():

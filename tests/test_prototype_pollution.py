@@ -4,9 +4,9 @@ from __future__ import annotations
 
 import json
 
-from strix.models import ScanResult, Target, WebEndpoint
-from strix.scan import prototype_pollution as pp
-from strix.utils.net import HttpResponse
+from reconowl.models import ScanResult, Target, WebEndpoint
+from reconowl.scan import prototype_pollution as pp
+from reconowl.utils.net import HttpResponse
 
 
 def test_pollute_body():

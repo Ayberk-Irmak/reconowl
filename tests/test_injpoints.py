@@ -4,9 +4,9 @@ from __future__ import annotations
 
 import json
 
-from strix.models import Form, ScanResult, Target, WebEndpoint
-from strix.scan import injpoints
-from strix.utils.net import HttpResponse
+from reconowl.models import Form, ScanResult, Target, WebEndpoint
+from reconowl.scan import injpoints
+from reconowl.utils.net import HttpResponse
 
 
 class _CaptureClient:

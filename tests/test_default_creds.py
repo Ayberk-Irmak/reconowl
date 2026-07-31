@@ -4,10 +4,10 @@ from __future__ import annotations
 
 import base64
 
-from strix.config import ScanConfig
-from strix.models import ScanResult, Target, WebEndpoint
-from strix.scan import default_creds
-from strix.utils.net import HttpResponse
+from reconowl.config import ScanConfig
+from reconowl.models import ScanResult, Target, WebEndpoint
+from reconowl.scan import default_creds
+from reconowl.utils.net import HttpResponse
 
 
 def _result():

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from strix.models import Finding, Port, ScanResult, Severity, Target
+from reconowl.models import Finding, Port, ScanResult, Severity, Target
 
 
 def test_severity_ordering_and_parse():
@@ -38,7 +38,7 @@ def test_scanresult_to_dict_shape():
     r.ports.append(Port(number=80, service="http"))
     r.add_finding(Finding("f", Severity.HIGH, "x"))
     d = r.to_dict()
-    assert d["tool"] == "strix"
+    assert d["tool"] == "reconowl"
     assert d["summary"]["total_findings"] == 1
     assert d["ports"][0]["number"] == 80
     assert d["findings"][0]["severity"] == "High"

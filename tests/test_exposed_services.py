@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from strix.models import Port, ScanResult, Severity, Target, WebEndpoint
-from strix.scan import exposed_services as es
+from reconowl.models import Port, ScanResult, Severity, Target, WebEndpoint
+from reconowl.scan import exposed_services as es
 
 
 def test_classify_port_database_high():

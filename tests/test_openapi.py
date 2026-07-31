@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
-from strix.config import ScanConfig
-from strix.models import ScanResult, Target
-from strix.scan import openapi
-from strix.utils.net import HttpResponse
+from reconowl.config import ScanConfig
+from reconowl.models import ScanResult, Target
+from reconowl.scan import openapi
+from reconowl.utils.net import HttpResponse
 
 OAS3 = {
     "openapi": "3.0.1",

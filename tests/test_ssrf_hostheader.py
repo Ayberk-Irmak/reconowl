@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import requests
 
-from strix.models import ScanResult, Target
-from strix.scan import hostheader, ssrf
+from reconowl.models import ScanResult, Target
+from reconowl.scan import hostheader, ssrf
 
 
 # --- Host-header injection ------------------------------------------------- #

@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from strix.scan import email_security as es
-from strix.scan.engine import _WEB_INDEPENDENT
+from reconowl.scan import email_security as es
+from reconowl.scan.engine import _WEB_INDEPENDENT
 
 
 def test_spf_all_qualifier():

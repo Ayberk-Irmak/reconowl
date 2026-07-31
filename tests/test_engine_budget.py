@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
-from strix.config import ScanConfig
-from strix.models import Port, ScanResult, Target, WebEndpoint
-from strix.scan import engine
-from strix.utils.net import HttpResponse
+from reconowl.config import ScanConfig
+from reconowl.models import Port, ScanResult, Target, WebEndpoint
+from reconowl.scan import engine
+from reconowl.utils.net import HttpResponse
 
 
 class _Client:

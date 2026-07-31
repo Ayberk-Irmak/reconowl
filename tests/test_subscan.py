@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
-from strix import subscan
-from strix.config import ScanConfig
-from strix.models import Finding, ScanResult, Severity, Target, WebEndpoint
-from strix.utils.net import HttpResponse
+from reconowl import subscan
+from reconowl.config import ScanConfig
+from reconowl.models import Finding, ScanResult, Severity, Target, WebEndpoint
+from reconowl.utils.net import HttpResponse
 
 
 class _FakeClient:

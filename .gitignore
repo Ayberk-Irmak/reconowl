@@ -17,8 +17,8 @@ env/
 .coverage
 htmlcov/
 
-# Strix output
-strix-report/
+# reconowl output
+reconowl-report/
 *.log
 diff.json
 diff.md

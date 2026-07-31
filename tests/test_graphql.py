@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from strix.models import ScanResult, Target
-from strix.scan import graphql
-from strix.utils.net import HttpResponse
+from reconowl.models import ScanResult, Target
+from reconowl.scan import graphql
+from reconowl.utils.net import HttpResponse
 
 _SCHEMA = '{"data":{"__schema":{"queryType":{"name":"Query"},"types":[{"name":"User"},{"name":"Post"}]}}}'
 
@@ -59,7 +59,7 @@ def test_check_detects_introspection_and_ide():
     class UI:
         def info(self, m): pass
 
-    from strix.config import ScanConfig
+    from reconowl.config import ScanConfig
     findings = graphql.check(r, ScanConfig(), Client(), UI())
     cats = {f.category for f in findings}
     assert "graphql-introspection" in cats

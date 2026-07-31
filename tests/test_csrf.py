@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
-from strix.config import ScanConfig
-from strix.models import Form, ScanResult, Target
-from strix.scan import csrf
-from strix.utils.net import HttpResponse
+from reconowl.config import ScanConfig
+from reconowl.models import Form, ScanResult, Target
+from reconowl.scan import csrf
+from reconowl.utils.net import HttpResponse
 
 
 class _UI:

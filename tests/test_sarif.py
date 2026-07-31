@@ -4,9 +4,9 @@ from __future__ import annotations
 
 import json
 
-from strix.models import Finding, ScanResult, Severity, Target
-from strix.report import sarif
-from strix.scoring import score_finding
+from reconowl.models import Finding, ScanResult, Severity, Target
+from reconowl.report import sarif
+from reconowl.scoring import score_finding
 
 
 def _result() -> ScanResult:
@@ -33,7 +33,7 @@ def test_sarif_structure_and_levels():
     doc = json.loads(sarif.render(_result()))
     assert doc["version"] == "2.1.0"
     driver = doc["runs"][0]["tool"]["driver"]
-    assert driver["name"] == "Strix"
+    assert driver["name"] == "reconowl"
 
     # One rule per unique category (sqli appears twice -> one rule).
     rule_ids = [r["id"] for r in driver["rules"]]

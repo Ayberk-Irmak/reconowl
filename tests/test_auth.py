@@ -5,10 +5,10 @@ from __future__ import annotations
 import argparse
 import base64
 
-from strix.cli import build_auth_headers
-from strix.config import ScanConfig
-from strix.utils.net import HttpClient, build_client
-from strix.utils.tools import header_flags
+from reconowl.cli import build_auth_headers
+from reconowl.config import ScanConfig
+from reconowl.utils.net import HttpClient, build_client
+from reconowl.utils.tools import header_flags
 
 
 def _args(**kw):
