@@ -6,6 +6,8 @@ All notable changes to reconowl are documented here. The format is based on
 
 ## [Unreleased]
 
+## [0.3.1] - 2026-08-01
+
 ### Added
 - Error-based SQL-injection detection now recognises **SQLite / Python** database
   errors (`sqlite3.OperationalError`, `unrecognized token`, SQLAlchemy) in
