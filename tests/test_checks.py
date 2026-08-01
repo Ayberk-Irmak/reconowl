@@ -68,6 +68,16 @@ def test_injection_mutate_only_target_param():
     assert "cat=2" in out
 
 
+def test_sql_error_signatures_cover_sqlite_and_classic_engines():
+    # A Python/SQLite debug leak (as a vulnerable app emits) must be recognised —
+    # this was a real gap fixed after end-to-end testing on a vulnerable target.
+    sqlite_leak = 'sqlite3.OperationalError: unrecognized token: "\'"'.lower()
+    assert any(sig in sqlite_leak for sig in injection._SQL_ERRORS)
+    # Classic MySQL/Postgres error leaks stay covered.
+    assert any(sig in "you have an error in your sql syntax" for sig in injection._SQL_ERRORS)
+    assert any(sig in "syntax error at or near \"'\"" for sig in injection._SQL_ERRORS)
+
+
 def test_in_scope_keeps_target_and_siblings_rejects_others():
     assert in_scope("https://shop.example.com/x", "example.com") is True
     assert in_scope("https://example.com/x", "shop.example.com") is True

@@ -7,6 +7,11 @@ All notable changes to reconowl are documented here. The format is based on
 ## [Unreleased]
 
 ### Added
+- Error-based SQL-injection detection now recognises **SQLite / Python** database
+  errors (`sqlite3.OperationalError`, `unrecognized token`, SQLAlchemy) in
+  addition to MySQL/Postgres/Oracle/MSSQL — validated end-to-end against a
+  deliberately vulnerable local app (SQLi/XSS/LFI/command-injection all detected
+  with request/response proof).
 - CI now runs `ruff` linting (focused `E`/`F`/`I`/`UP`/`B` ruleset) alongside the
   test matrix; issue & PR templates, a `SECURITY.md` disclosure policy, an
   `Example` section in the README, and Dependabot for pip + GitHub Actions.

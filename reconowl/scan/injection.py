@@ -37,6 +37,11 @@ _SQL_ERRORS = [
     "mysql_fetch_array()",
     "supplied argument is not a valid mysql",
     "syntax error at or near",
+    # SQLite / Python (apps with debug tracebacks leak these)
+    "unrecognized token",
+    "sqlite3.operationalerror",
+    "sqlite3.programmingerror",
+    "sqlalchemy.exc",
 ]
 
 _SQLI_PAYLOAD = "'"
