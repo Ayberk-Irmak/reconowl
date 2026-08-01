@@ -5,7 +5,7 @@
 ![python](https://img.shields.io/badge/python-3.10%2B-blue)
 ![license](https://img.shields.io/badge/license-MIT-green)
 ![checks](https://img.shields.io/badge/native%20checks-28-8a2be2)
-![tests](https://img.shields.io/badge/tests-209-brightgreen)
+![tests](https://img.shields.io/badge/tests-210-brightgreen)
 
 **Recon → scan → report, in one command.** reconowl is a CLI penetration-testing
 orchestrator: point it at a target and it runs passive + active reconnaissance,
