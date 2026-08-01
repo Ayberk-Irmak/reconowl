@@ -56,6 +56,23 @@ Findings by severity:  Critical 0 · High 2 · Medium 5 · Low 3 · Info 7
 Every confirmed finding carries a CVSS score and the exact request/response that
 proved it (auth headers redacted). *Values above are illustrative.*
 
+## Proven detection
+
+Against a deliberately vulnerable local app, the native injection checks confirm
+real bugs and attach the request/response that proved each one:
+
+| Finding | CVSS | Confirmed by |
+| --- | --- | --- |
+| OS command injection (`host`) | 9.8 Critical | `GET /ping?host=;id` → `uid=0(root) gid=0(root)` |
+| SQL injection (`id`) | 9.8 High | `GET /item?id=1'` → `sqlite3.OperationalError: unrecognized token` |
+| LFI / path traversal (`file`) | 7.5 High | `GET /read?file=../../../../etc/passwd` → `root:x:0:0:…` |
+| Reflected XSS (`q`) | 6.1 Medium | injected marker reflected unencoded |
+
+Each is confirmed only on real evidence (command output, a database error, a
+target-file signature, an unencoded reflection) — never on reflection alone — so
+false positives stay low. Findings are not reported from a matched banner or
+version string.
+
 ## Features
 
 **Phase 1 — Passive recon** (no packets to the target)
