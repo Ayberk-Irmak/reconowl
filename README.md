@@ -216,7 +216,7 @@ so checks reach authenticated surface area — or let reconowl **log in for you*
 ## Requirements
 
 - Python 3.10+
-- Python packages (`pip install -r requirements.txt`): rich, requests,
+- Python packages (installed automatically with reconowl): rich, requests,
   dnspython, jinja2, cryptography.
 - Optional external tools on `PATH` (reconowl auto-detects and degrades gracefully):
   `nmap`, `nuclei`, `httpx`, `katana`, `sqlmap`, `nikto`, `whatweb`, `wafw00f`,
@@ -227,23 +227,37 @@ so checks reach authenticated surface area — or let reconowl **log in for you*
 
 ## Install
 
+**Kali / Debian / Ubuntu** — these mark the system Python as *externally managed*
+(PEP 668), so a plain `pip install` is refused. Install reconowl as an isolated
+CLI with **pipx** (recommended):
+
 ```bash
-pip install reconowl        # from PyPI — installs the `reconowl` command
+sudo apt install pipx        # if you don't have it
+pipx install reconowl
+pipx ensurepath              # puts ~/.local/bin on PATH — then reopen your shell
+reconowl --help
+```
+
+Anywhere pip is allowed (other distros, or inside a virtualenv):
+
+```bash
+pip install reconowl
 reconowl --help
 ```
 
 Optional **headless browser** for SPA/JS rendering:
 
 ```bash
-pip install "reconowl[render]" && playwright install chromium
+pipx install "reconowl[render]" --include-deps && playwright install chromium
 ```
 
 From source (for development):
 
 ```bash
 git clone https://github.com/Ayberk-Irmak/reconowl.git && cd reconowl
-pip install -e .
-python -m reconowl --help
+python3 -m venv .venv && . .venv/bin/activate
+pip install -e ".[test]"
+reconowl --help
 ```
 
 ## Usage
