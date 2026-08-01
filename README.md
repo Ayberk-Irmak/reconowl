@@ -37,7 +37,7 @@ A run against an authorized target looks like this (output abbreviated):
       /)__)   | '_/ -_) _/ _ \ ' \/ _ \ V  V / |
       -"-"-   |_| \___\__\___/_||_\___/\_/\_/|_|
 
-  recon → scan → report   v0.3.0
+  recon → scan → report   v0.3.1
 
 ╭ Phase 1 · Passive reconnaissance ╮
 ✓ DNS: A(1), MX(1), NS(2), TXT(3)     ✓ Subdomains: 4     ✓ Archived URLs: 118
