@@ -72,3 +72,18 @@ def test_query_url_raw_preserves_encoding():
     p = injpoints.InjectionPoint("GET", "http://a.com/p", "f", "query", {"f": "1"})
     raw = injpoints._query_url(p, "..%2f..%2fetc", raw=True)
     assert "f=..%2f..%2fetc" in raw  # not double-encoded
+
+
+def test_build_prioritizes_crawled_over_archive_urls():
+    """Crawled/live URLs must beat harvested archive URLs for the injection cap."""
+    from reconowl.models import ScanResult, Target
+    from reconowl.scan import injpoints
+    r = ScanResult(target=Target(raw="a.com", host="a.com", base_url="https://a.com"))
+    # 50 archive URLs (with params) placed BEFORE the one crawled URL, like Wayback.
+    r.urls = [f"https://a.com/arch{i}.php?x=1" for i in range(50)]
+    live = "https://a.com/live.php?vuln=1"
+    r.urls.append(live)
+    r.crawled.add(live)
+    points = injpoints.build(r, "a.com", cap=5)
+    assert any(p.url == "https://a.com/live.php" and p.param == "vuln" for p in points), \
+        "crawled URL was crowded out of the cap by archive URLs"

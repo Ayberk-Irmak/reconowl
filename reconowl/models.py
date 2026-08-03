@@ -153,6 +153,9 @@ class ScanResult:
     ports: list[Port] = field(default_factory=list)
     endpoints: list[WebEndpoint] = field(default_factory=list)
     urls: list[str] = field(default_factory=list)
+    #: URLs the active crawler actually discovered on live pages (higher-value
+    #: injection targets than passively-harvested archive URLs). Not serialized.
+    crawled: set[str] = field(default_factory=set)
     forms: list[Form] = field(default_factory=list)
     js_files: list[str] = field(default_factory=list)
     #: Secret hits from JS analysis: {type, match, severity, location}.

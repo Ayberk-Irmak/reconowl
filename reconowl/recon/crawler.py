@@ -121,6 +121,10 @@ def run(result: ScanResult, config: ScanConfig, ui) -> None:
     form_keys = {(f.url, f.method, tuple(f.params)) for f in result.forms}
 
     def add(url: str) -> None:
+        if in_scope(url, host) and not _is_logout(url):
+            # Mark as crawler-discovered even if it was already harvested passively,
+            # so the injection checks prioritise live-seen URLs over archive URLs.
+            result.crawled.add(url)
         if (url not in known and in_scope(url, host) and not _is_logout(url)
                 and len(result.urls) < url_cap):
             known.add(url)

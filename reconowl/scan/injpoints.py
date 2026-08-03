@@ -103,9 +103,22 @@ def baseline(client: HttpClient, point: InjectionPoint) -> HttpResponse:
 # --------------------------------------------------------------------------- #
 # Building points from recon assets
 # --------------------------------------------------------------------------- #
+def _ordered_urls(result: ScanResult) -> list[str]:
+    """URLs with actively-discovered (crawled/live) ones first, archive URLs last.
+
+    Passive recon can harvest hundreds of archived URLs that get placed ahead of
+    the freshly-crawled, confirmed-live URLs; without this ordering the per-check
+    injection-point cap would test stale archive URLs and miss real endpoints.
+    """
+    live = set(getattr(result, "crawled", set())) | {e.url for e in result.endpoints}
+    first = [u for u in result.urls if u in live]
+    rest = [u for u in result.urls if u not in live]
+    return first + rest
+
+
 def _url_query_points(result: ScanResult, host: str, param_filter) -> list[InjectionPoint]:
     points: list[InjectionPoint] = []
-    for url in result.urls:
+    for url in _ordered_urls(result):
         if not in_scope(url, host):
             continue
         parts = urllib.parse.urlsplit(url)
