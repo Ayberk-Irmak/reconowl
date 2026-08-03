@@ -6,6 +6,18 @@ All notable changes to reconowl are documented here. The format is based on
 
 ## [Unreleased]
 
+## [0.4.1] - 2026-08-03
+
+### Fixed
+- **Injection checks no longer miss real endpoints on targets with archive history.**
+  Passive recon can harvest hundreds of Wayback URLs that were placed ahead of the
+  freshly-crawled live URLs in `result.urls`; the per-check injection-point cap then
+  spent itself on stale archive URLs and skipped real parameters (e.g. LFI and OS
+  command injection on a live parameter went undetected). Crawler-discovered URLs
+  are now tracked and prioritised over archive URLs when building injection points.
+  Verified end-to-end against a vulnerable app with 300 harvested URLs: SQLi, XSS,
+  LFI, and command injection are all detected again.
+
 ## [0.4.0] - 2026-08-03
 
 ### Added
