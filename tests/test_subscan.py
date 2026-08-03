@@ -63,7 +63,7 @@ def test_run_scans_live_subdomains(monkeypatch):
         assert web_only is True
         sub_result.endpoints.append(WebEndpoint(url=sub_result.target.base_url, status=200))
 
-    def fake_engine_run(sub_result, config, ui):
+    def fake_engine_run(sub_result, config, ui, deadline=None):
         scanned.append(sub_result.target.host)
         sub_result.add_finding(
             Finding("Missing CSP", Severity.MEDIUM, sub_result.target.host,
@@ -81,3 +81,28 @@ def test_run_scans_live_subdomains(monkeypatch):
     assert scanned == ["a.x.com"]  # only the live, non-primary subdomain
     assert any(f.location == "https://a.x.com" for f in result.findings)
     assert any(e.url == "https://a.x.com" for e in result.endpoints)
+
+
+def test_run_respects_global_deadline(monkeypatch):
+    # A deadline already in the past must skip every subdomain and record it.
+    result = ScanResult(target=Target(raw="x.com", host="x.com"))
+    result.subdomains = ["a.x.com", "b.x.com"]
+    monkeypatch.setattr(
+        subscan, "_live_subdomains",
+        lambda subs, client, workers: {"a.x.com": "https://a.x.com", "b.x.com": "https://b.x.com"},
+    )
+    monkeypatch.setattr(subscan.dnsx, "resolve_ip", lambda h, **k: "1.2.3.4")
+
+    scanned = []
+    monkeypatch.setattr(subscan.active, "run",
+                        lambda *a, **k: scanned.append("active"))
+    monkeypatch.setattr(subscan.engine, "run",
+                        lambda *a, **k: scanned.append("engine"))
+
+    ui = subscan._QuietUI(type("U", (), {"warn": lambda *a: None, "error": lambda *a: None,
+                                         "finding": lambda *a, **k: None, "info": lambda *a: None,
+                                         "good": lambda *a: None})())
+    subscan.run(result, ScanConfig(max_subdomains=25), ui, deadline=0.0)  # already expired
+
+    assert scanned == []  # nothing scanned once the budget is blown
+    assert any("time budget reached during subdomain deepening" in e for e in result.errors)

@@ -9,6 +9,7 @@ subdomain to keep a broad sweep practical; the primary host still gets both.
 
 from __future__ import annotations
 
+import time
 from dataclasses import replace
 
 from .config import ScanConfig
@@ -78,8 +79,13 @@ def _merge(result: ScanResult, sub_result: ScanResult) -> None:
     result.technologies = sorted(set(result.technologies) | set(sub_result.technologies))
 
 
-def run(result: ScanResult, config: ScanConfig, ui) -> None:
-    """Deepen the scan into live subdomains, merging results back in."""
+def run(result: ScanResult, config: ScanConfig, ui, deadline: float | None = None) -> None:
+    """Deepen the scan into live subdomains, merging results back in.
+
+    ``deadline`` is a shared ``time.monotonic()`` cutoff for the whole run; once it
+    passes, no new subdomain is started and the skipped count is recorded, so a
+    100-subdomain target can never run for hours past ``--max-time``.
+    """
     subs = [s for s in result.subdomains if s and s != result.target.host]
     if not subs:
         ui.info("No subdomains to deepen into.")
@@ -97,11 +103,27 @@ def run(result: ScanResult, config: ScanConfig, ui) -> None:
     live = _live_subdomains(subs, client, config.concurrency)
     ui.good(f"Live subdomains: {len(live)}")
 
-    # Web-layer only per subdomain: no port scan, no nuclei, no recursion.
-    sub_config = replace(config, run_nuclei=False, include_subdomains=False)
+    # Web-layer only per subdomain, and deliberately light: no port scan, no
+    # nuclei, no directory brute-force, and a shallow crawl — a broad sweep should
+    # not spend the whole budget on one subdomain.
+    sub_config = replace(
+        config, run_nuclei=False, include_subdomains=False, dirbrute=False,
+        crawl_depth=min(config.crawl_depth, 1),
+        crawl_max_pages=min(config.crawl_max_pages, 40),
+    )
     quiet = _QuietUI(ui)
 
-    for sub, base in sorted(live.items()):
+    items = sorted(live.items())
+    for index, (sub, base) in enumerate(items):
+        if deadline is not None and time.monotonic() > deadline:
+            skipped = len(items) - index
+            ui.warn(f"Global time budget reached — skipping {skipped} remaining "
+                    "subdomain(s) (raise --max-time or lower --max-subdomains).")
+            result.errors.append(
+                f"scan incomplete: time budget reached during subdomain deepening; "
+                f"{skipped} subdomain(s) not scanned"
+            )
+            break
         ui.info(f"↳ {sub}")
         sub_result = ScanResult(
             target=Target(
@@ -111,7 +133,7 @@ def run(result: ScanResult, config: ScanConfig, ui) -> None:
         )
         try:
             active.run(sub_result, sub_config, quiet, web_only=True)
-            engine.run(sub_result, sub_config, quiet)
+            engine.run(sub_result, sub_config, quiet, deadline=deadline)
         except Exception as exc:  # noqa: BLE001 - one bad subdomain never aborts
             result.errors.append(f"subdomain {sub}: {exc}")
             continue

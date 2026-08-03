@@ -103,12 +103,15 @@ def _web_reachable(result: ScanResult, client) -> bool:
     return client.get(base).ok
 
 
-def run(result: ScanResult, config: ScanConfig, ui) -> None:
+def run(result: ScanResult, config: ScanConfig, ui, deadline: float | None = None) -> None:
     """Run all vulnerability checks and attach de-duplicated findings.
 
     Guards against pathological runtime: if the target's web server is not
     reachable, HTTP checks are skipped instead of timing out on every payload;
-    and a global time budget stops the phase from running unbounded.
+    and a time budget stops the phase from running unbounded. ``deadline`` is a
+    ``time.monotonic()`` cutoff shared across the whole run (main host + every
+    deepened subdomain); when omitted it defaults to ``config.max_scan_seconds``
+    from now, preserving standalone behaviour.
     """
     import time
 
@@ -134,7 +137,8 @@ def run(result: ScanResult, config: ScanConfig, ui) -> None:
                              + ("likely blocked/rate-limited; " if web_ports_open else "")
                              + "all HTTP checks skipped")
 
-    deadline = time.monotonic() + config.max_scan_seconds
+    if deadline is None:
+        deadline = time.monotonic() + config.max_scan_seconds
     collected: list[Finding] = []
     for idx, (name, check) in enumerate(_NATIVE_CHECKS):
         if not reachable and name not in _WEB_INDEPENDENT:

@@ -6,6 +6,7 @@ import argparse
 import ipaddress
 import os
 import sys
+import time
 import urllib.parse
 from datetime import datetime, timezone
 
@@ -66,27 +67,66 @@ def build_auth_headers(args: argparse.Namespace) -> dict[str, str]:
     return headers
 
 
+#: Presets that bundle sane defaults so users pick one knob instead of six.
+#: Any individual flag the user passes still overrides the corresponding value.
+_PROFILES: dict[str, dict] = {
+    "quick":    {"intensity": "light",      "subdomains": False, "max_time": 300.0,
+                 "dirbrute": False, "render": "off",  "concurrency": 20, "rate_limit": 0.0,
+                 "jitter": 0.0, "max_subdomains": 10},
+    "standard": {"intensity": "normal",     "subdomains": False, "max_time": 900.0,
+                 "dirbrute": True,  "render": "auto", "concurrency": 20, "rate_limit": 0.0,
+                 "jitter": 0.0, "max_subdomains": 25},
+    "deep":     {"intensity": "aggressive", "subdomains": True,  "max_time": 2400.0,
+                 "dirbrute": True,  "render": "auto", "concurrency": 20, "rate_limit": 0.0,
+                 "jitter": 0.0, "max_subdomains": 25},
+    "stealth":  {"intensity": "normal",     "subdomains": False, "max_time": 1200.0,
+                 "dirbrute": False, "render": "auto", "concurrency": 3,  "rate_limit": 2.0,
+                 "jitter": 0.4, "max_subdomains": 15},
+}
+
+
+def resolve_profile(args: argparse.Namespace) -> dict:
+    """Merge the chosen profile with explicit flags (explicit wins)."""
+    prof = dict(_PROFILES[args.profile or "standard"])
+
+    def pick(value, key):
+        return prof[key] if value is None else value
+
+    out = {
+        "intensity": pick(args.intensity, "intensity"),
+        "subdomains": pick(args.subdomains, "subdomains"),
+        "max_time": pick(args.max_time, "max_time"),
+        "dirbrute": pick(args.dirbrute, "dirbrute"),
+        "render_mode": pick(args.render_mode, "render"),
+        "concurrency": pick(args.concurrency, "concurrency"),
+        "rate_limit": pick(args.rate_limit, "rate_limit"),
+        "jitter": prof["jitter"],
+        "max_subdomains": pick(args.max_subdomains, "max_subdomains"),
+    }
+    if args.stealth:  # polite pacing on top of any profile (for touchy targets / WAFs)
+        out["concurrency"] = min(out["concurrency"], 3)
+        out["rate_limit"] = out["rate_limit"] or 2.0
+        out["jitter"] = max(out["jitter"], 0.4)
+    return out
+
+
 def build_config(args: argparse.Namespace) -> ScanConfig:
     formats = [f.strip() for f in args.formats.split(",") if f.strip()]
-    concurrency, rate_limit, jitter = args.concurrency, args.rate_limit, 0.0
-    if args.stealth:  # polite defaults for touchy targets / WAFs
-        concurrency = min(concurrency, 3)
-        rate_limit = rate_limit or 2.0
-        jitter = 0.4
+    p = resolve_profile(args)
     return ScanConfig(
         target=args.target,
         passive=not args.no_passive,
         active=not args.no_active and not args.passive_only,
         vuln=not args.no_vuln and not args.passive_only,
         authorized=args.authorize,
-        intensity=args.intensity,
-        include_subdomains=args.subdomains,
-        max_subdomains=args.max_subdomains,
+        intensity=p["intensity"],
+        include_subdomains=p["subdomains"],
+        max_subdomains=p["max_subdomains"],
         max_urls=args.max_urls,
         crawl=not args.no_crawl,
         crawl_depth=args.crawl_depth,
         crawl_max_pages=args.crawl_pages,
-        render_mode=args.render_mode,
+        render_mode=p["render_mode"],
         render_max_pages=args.render_pages,
         js_analysis=not args.no_js,
         cve_lookup=not args.no_cve,
@@ -94,10 +134,10 @@ def build_config(args: argparse.Namespace) -> ScanConfig:
         csrf_check=not args.no_csrf,
         openapi=not args.no_openapi,
         timeout=args.timeout,
-        concurrency=concurrency,
-        max_scan_seconds=args.max_time,
-        rate_limit=rate_limit,
-        jitter=jitter,
+        concurrency=p["concurrency"],
+        max_scan_seconds=p["max_time"],
+        rate_limit=p["rate_limit"],
+        jitter=p["jitter"],
         adaptive=not args.no_adaptive,
         extra_headers=build_auth_headers(args),
         cookie=args.cookie,
@@ -111,7 +151,7 @@ def build_config(args: argparse.Namespace) -> ScanConfig:
         use_external=not args.no_external,
         run_nuclei=not args.no_nuclei,
         run_sqlmap=args.sqlmap,
-        dirbrute=not args.no_dirbrute,
+        dirbrute=p["dirbrute"],
         wordlist=args.wordlist,
         ssrf_oob=not args.no_oob,
         oob_host=args.oob_host,
@@ -169,6 +209,12 @@ def run(args: argparse.Namespace) -> int:
     target = parse_target(args.target)
 
     ui.info(f"Target: {target.raw}  (host={target.host}{', IP' if target.is_ip else ''})")
+    ui.info(
+        f"Profile: {args.profile or 'standard'} · intensity={config.intensity} · "
+        f"budget={config.max_scan_seconds:.0f}s"
+        + (f" · subdomains≤{config.max_subdomains}" if config.include_subdomains else "")
+        + (" · stealth" if config.rate_limit else "")
+    )
     tools = available_tools()
     detected = [n for n, p in tools.items() if p]
     ui.info(f"External tools detected: {', '.join(detected) if detected else 'none (native-only mode)'}")
@@ -208,10 +254,14 @@ def run(args: argparse.Namespace) -> int:
             result.errors.append(f"active: {exc}")
             ui.error(f"Active recon error: {exc}")
 
+    # One global wall-clock budget for the whole vuln phase — main host AND every
+    # deepened subdomain share it, so --max-time bounds total runtime (not per-host).
+    scan_deadline = time.monotonic() + config.max_scan_seconds
+
     if config.vuln:
         ui.phase("Phase 3 · Vulnerability scanning")
         try:
-            scan_engine.run(result, config, ui)
+            scan_engine.run(result, config, ui, deadline=scan_deadline)
         except Exception as exc:  # noqa: BLE001
             result.errors.append(f"scan: {exc}")
             ui.error(f"Scan error: {exc}")
@@ -219,7 +269,7 @@ def run(args: argparse.Namespace) -> int:
     if config.include_subdomains and (config.active or config.vuln):
         ui.phase("Phase 3b · Subdomain deepening")
         try:
-            subscan.run(result, config, ui)
+            subscan.run(result, config, ui, deadline=scan_deadline)
         except Exception as exc:  # noqa: BLE001
             result.errors.append(f"deepening: {exc}")
             ui.error(f"Subdomain deepening error: {exc}")
@@ -279,8 +329,12 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("target", nargs="?", help="Target domain, URL, or IP address.")
     p.add_argument("-y", "--authorize", action="store_true",
                    help="Confirm authorization non-interactively.")
+    p.add_argument("--profile", choices=["quick", "standard", "deep", "stealth"],
+                   default=None,
+                   help="Preset that bundles intensity, pacing, subdomains, and time "
+                        "budget (default: standard). Individual flags override it.")
     p.add_argument("-i", "--intensity", choices=["light", "normal", "aggressive"],
-                   default="normal", help="Scan intensity (default: normal).")
+                   default=None, help="Scan intensity (overrides the profile).")
     p.add_argument("-o", "--output", default="reconowl-report",
                    help="Output directory for reports (default: reconowl-report).")
     p.add_argument("--formats", default="html,json,md",
@@ -300,8 +354,8 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--no-nuclei", action="store_true", help="Do not run nuclei.")
     p.add_argument("--sqlmap", action="store_true",
                    help="Confirm SQLi candidates with sqlmap (slow).")
-    p.add_argument("--no-dirbrute", action="store_true",
-                   help="Disable directory/file brute-forcing.")
+    p.add_argument("--no-dirbrute", dest="dirbrute", action="store_const", const=False,
+                   default=None, help="Disable directory/file brute-forcing.")
     p.add_argument("--wordlist", default="",
                    help="Custom wordlist for directory brute-forcing.")
     p.add_argument("--no-oob", action="store_true",
@@ -310,10 +364,12 @@ def build_parser() -> argparse.ArgumentParser:
                    help="Reachable host for SSRF callbacks (default: auto-detect).")
     p.add_argument("--oob-port", type=int, default=0,
                    help="SSRF callback listener port (default: ephemeral).")
-    p.add_argument("--subdomains", action="store_true",
-                   help="Also scan discovered subdomains (broader, slower).")
-    p.add_argument("--max-subdomains", type=int, default=25,
-                   help="Max subdomains to deepen into (default: 25).")
+    p.add_argument("--subdomains", dest="subdomains", action="store_const", const=True,
+                   default=None, help="Also scan discovered subdomains (broader, slower).")
+    p.add_argument("--no-subdomains", dest="subdomains", action="store_const", const=False,
+                   help="Do not deepen into subdomains (overrides the profile).")
+    p.add_argument("--max-subdomains", type=int, default=None,
+                   help="Max subdomains to deepen into (profile default: 25).")
 
     auth = p.add_argument_group("authentication")
     auth.add_argument("-H", "--header", action="append", metavar="'Name: Value'",
@@ -343,7 +399,7 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--crawl-pages", type=int, default=200,
                    help="Max pages to crawl (default: 200).")
     p.add_argument("--render", dest="render_mode", action="store_const", const="on",
-                   default="auto",
+                   default=None,
                    help="Force headless JS rendering of seed pages (needs Playwright).")
     p.add_argument("--no-render", dest="render_mode", action="store_const", const="off",
                    help="Disable headless JS rendering (default: auto, only when SPA-like).")
@@ -360,10 +416,11 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--no-openapi", action="store_true",
                    help="Disable OpenAPI/Swagger spec discovery and parsing.")
     p.add_argument("--timeout", type=float, default=12.0, help="Per-request timeout (s).")
-    p.add_argument("--max-time", type=float, default=900.0,
-                   help="Time budget for the vuln-scan phase in seconds (default: 900).")
-    p.add_argument("--concurrency", type=int, default=20, help="Concurrent workers.")
-    p.add_argument("--rate-limit", type=float, default=0.0,
+    p.add_argument("--max-time", type=float, default=None,
+                   help="Global time budget (seconds) for the whole vuln phase INCLUDING "
+                        "subdomain deepening. Profile default: standard=900, deep=2400.")
+    p.add_argument("--concurrency", type=int, default=None, help="Concurrent workers.")
+    p.add_argument("--rate-limit", type=float, default=None,
                    help="Max requests/second for native checks (0 = unlimited).")
     p.add_argument("--stealth", action="store_true",
                    help="Polite mode: low concurrency, rate-limit, and jitter.")

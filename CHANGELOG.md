@@ -6,6 +6,24 @@ All notable changes to reconowl are documented here. The format is based on
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-08-03
+
+### Added
+- **`--profile` presets** (`quick`, `standard`, `deep`, `stealth`) bundle intensity,
+  pacing, subdomain deepening, and the time budget into a single knob — pick one
+  instead of juggling `-i`/`--stealth`/`--concurrency`/`--rate-limit`/`--max-time`/
+  `--subdomains`. Every individual flag still overrides the profile, and the active
+  profile is printed at the start of each scan. `--no-subdomains` added.
+
+### Changed
+- **`--max-time` is now a global budget** covering the whole vulnerability phase
+  *including* subdomain deepening. Previously it applied per host, so `--subdomains`
+  on a large target (e.g. 100+ subdomains) could run for hours; now the run stops
+  starting new subdomains once the budget is reached and records how many were
+  skipped.
+- Subdomain deepening is lighter per host (shallow crawl, no directory brute-force)
+  so a broad sweep stays practical.
+
 ## [0.3.1] - 2026-08-01
 
 ### Added

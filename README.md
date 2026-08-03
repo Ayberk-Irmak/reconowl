@@ -5,7 +5,7 @@
 ![python](https://img.shields.io/badge/python-3.10%2B-blue)
 ![license](https://img.shields.io/badge/license-MIT-green)
 ![checks](https://img.shields.io/badge/native%20checks-28-8a2be2)
-![tests](https://img.shields.io/badge/tests-210-brightgreen)
+![tests](https://img.shields.io/badge/tests-218-brightgreen)
 
 **Recon → scan → report, in one command.** reconowl is a CLI penetration-testing
 orchestrator: point it at a target and it runs passive + active reconnaissance,
@@ -37,7 +37,7 @@ A run against an authorized target looks like this (output abbreviated):
       /)__)   | '_/ -_) _/ _ \ ' \/ _ \ V  V / |
       -"-"-   |_| \___\__\___/_||_\___/\_/\_/|_|
 
-  recon → scan → report   v0.3.1
+  recon → scan → report   v0.4.0
 
 ╭ Phase 1 · Passive reconnaissance ╮
 ✓ DNS: A(1), MX(1), NS(2), TXT(3)     ✓ Subdomains: 4     ✓ Archived URLs: 118
@@ -262,33 +262,46 @@ reconowl --help
 
 ## Usage
 
-The examples below use the `reconowl` command; `python -m reconowl` is equivalent.
+Pick a **profile** — it bundles intensity, pacing, subdomain deepening, and the
+time budget so you don't have to juggle a dozen flags. Any individual flag still
+overrides the profile.
+
+| Profile | For | Bundles |
+| --- | --- | --- |
+| `quick` | fast triage of one host | light checks, no brute-force, ~5 min |
+| `standard` *(default)* | a normal single-host assessment | balanced, ~15 min |
+| `deep` | thorough, with subdomains | aggressive + subdomains + all checks, ~40 min |
+| `stealth` | WAF'd / touchy targets | low concurrency + rate-limit + jitter |
 
 ```bash
-# Full pipeline (recon + scan + report), confirming authorization inline:
-reconowl example.com -y
+reconowl https://target.tld -y                       # standard (default)
+reconowl https://target.tld -y --profile quick       # fast look
+reconowl https://target.tld -y --profile deep        # thorough + subdomains
+reconowl https://target.tld -y --profile stealth     # polite, avoids WAF blocks
+```
 
-# Web app target, aggressive intensity, HTML report only:
-reconowl https://target.tld -y -i aggressive --formats html
+The `--max-time` budget is **global** — it caps the whole vulnerability phase
+*including* subdomain deepening, so a target with hundreds of subdomains can never
+run for hours. Override anything on top of a profile:
 
-# Recon only, no active scanning:
+```bash
+# Deep coverage, but polite pacing and a hard 30-minute cap:
+reconowl https://target.tld -y --profile deep --stealth --max-time 1800
+
+# Deep, but only the 10 most relevant subdomains and no directory brute-force:
+reconowl https://target.tld -y --profile deep --max-subdomains 10 --no-dirbrute
+
+# Recon only / native-only / SQLi confirmation with sqlmap:
 reconowl target.tld -y --passive-only
-
-# Native-only (don't call nmap/nuclei/etc.):
 reconowl target.tld -y --no-external
-
-# Also scan discovered subdomains:
-reconowl target.tld -y --subdomains
-
-# Confirm SQLi candidates with sqlmap, custom output dir:
 reconowl "https://target.tld/item.php?id=1" -y --sqlmap -o ./engagement
 
-# Diff this scan against a previous run:
+# Diff this scan against a previous run (retest), or two saved reports:
 reconowl target.tld -y --diff ./engagement/report.json
-
-# Diff two saved reports without scanning:
 reconowl --diff-reports old/report.json new/report.json
 ```
+
+`python -m reconowl …` is equivalent to the `reconowl` command.
 
 ### Authenticated scanning
 
