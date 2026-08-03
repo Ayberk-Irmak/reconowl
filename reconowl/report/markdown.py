@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from ..models import ScanResult, Severity
+from .summary import build_summary
 
 
 def render(result: ScanResult) -> str:
@@ -17,6 +18,28 @@ def render(result: ScanResult) -> str:
     lines.append(f"- **Finished:** {result.finished_at}")
     if result.tools_used:
         lines.append(f"- **Tools used:** {', '.join(sorted(result.tools_used))}")
+    lines.append("")
+
+    # Executive summary
+    summary = build_summary(result)
+    lines.append("## Executive summary")
+    lines.append("")
+    lines.append(summary["narrative"])
+    lines.append("")
+
+    # Scan coverage
+    cov = summary["coverage"]
+    lines.append("## Scan coverage")
+    lines.append("")
+    if cov["complete"]:
+        lines.append("✅ **Complete** — all applicable checks ran to completion.")
+    else:
+        lines.append("⚠️ **Partial** — the scan did not fully cover everything. "
+                     "Findings are valid, but the *absence* of findings is inconclusive "
+                     "for the items below:")
+        lines.append("")
+        for c in cov["caveats"]:
+            lines.append(f"- {c}")
     lines.append("")
 
     # Summary

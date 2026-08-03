@@ -35,6 +35,15 @@ _SENSITIVE_PATHS: dict[str, tuple[str, Severity, str]] = {
 }
 
 
+def _exposure_category(severity: Severity) -> str:
+    """Pick a category whose CVSS vector matches the finding's severity."""
+    if severity in (Severity.CRITICAL, Severity.HIGH):
+        return "exposure"          # C:H → 7.5, for .git/.env/backups
+    if severity == Severity.INFO:
+        return "info-file"         # → 0.0, for robots.txt/security.txt
+    return "sensitive-file"        # severity fallback: Medium→5.4, Low→3.1
+
+
 def _baseline(client: HttpClient, base: str) -> tuple[int | None, int]:
     """Fetch a random path to learn the site's 'not found' behaviour."""
     probe = urllib.parse.urljoin(base + "/", "reconowl-nonexistent-a9f3c1e7.html")
@@ -66,9 +75,10 @@ def check(result, config, client: HttpClient, ui) -> list[Finding]:
             title=title,
             severity=severity,
             target=result.target.host,
-            # Benign informational files (robots.txt, security.txt) must not inherit
-            # the high-impact "exposure" CVSS vector meant for .git/.env/backups.
-            category="exposure" if severity != Severity.INFO else "info-file",
+            # Keep the CVSS consistent with the finding's severity: the high-impact
+            # "exposure" vector (7.5) is only for High/Critical leaks (.git/.env/
+            # backups); lower-severity files (.DS_Store, robots.txt) must not inherit it.
+            category=_exposure_category(severity),
             location=url,
             description=f"{url} is reachable and returned HTTP 200.",
             remediation="Remove the file from the web root or block access to it.",

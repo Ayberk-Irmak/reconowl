@@ -8,6 +8,7 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 from .. import __version__
 from ..models import ScanResult, Severity
+from .summary import build_summary
 
 _TEMPLATE_DIR = os.path.join(os.path.dirname(__file__), "templates")
 
@@ -28,6 +29,7 @@ def render(result: ScanResult) -> str:
     counts = result.severity_counts()
     return template.render(
         version=__version__,
+        summary=build_summary(result),
         target=result.target.to_dict(),
         started_at=result.started_at,
         finished_at=result.finished_at,

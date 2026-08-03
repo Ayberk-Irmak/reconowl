@@ -55,6 +55,14 @@
   details summary { cursor:pointer; color:var(--muted); margin:8px 0; }
   footer { margin-top:50px; color:var(--muted); font-size:12px; border-top:1px solid var(--border); padding-top:16px; }
   .empty { color:var(--muted); font-style:italic; }
+  .panel { background:var(--panel); border:1px solid var(--border); border-radius:10px;
+    padding:14px 16px; margin:14px 0; }
+  .panel h2 { margin:0 0 8px; font-size:16px; }
+  .panel p { margin:0; color:var(--text); line-height:1.55; }
+  .cov-ok { border-left:4px solid #3fb950; }
+  .cov-partial { border-left:4px solid #d29922; }
+  .cov-partial ul { margin:8px 0 0 18px; color:var(--text); }
+  .cov-partial li { margin:3px 0; }
 </style>
 </head>
 <body>
@@ -85,6 +93,27 @@
     <div class="card"><div class="n">{{ endpoints|length }}</div><div class="l">Endpoints</div></div>
     <div class="card"><div class="n">{{ urls|length }}</div><div class="l">URLs</div></div>
   </div>
+
+  <div class="panel">
+    <h2>Executive summary</h2>
+    <p>{{ summary.narrative }}</p>
+  </div>
+
+  {% if summary.coverage.complete %}
+  <div class="panel cov-ok">
+    <h2>Scan coverage</h2>
+    <p>✅ Complete — all applicable checks ran to completion.</p>
+  </div>
+  {% else %}
+  <div class="panel cov-partial">
+    <h2>⚠️ Scan coverage — partial</h2>
+    <p>The scan did not fully cover everything. Findings below are valid, but the
+       <b>absence</b> of findings is inconclusive for these items:</p>
+    <ul>
+      {% for c in summary.coverage.caveats %}<li>{{ c }}</li>{% endfor %}
+    </ul>
+  </div>
+  {% endif %}
 
   <h2>Findings</h2>
   {% if not findings %}<p class="empty">No findings.</p>{% endif %}

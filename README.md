@@ -5,7 +5,7 @@
 ![python](https://img.shields.io/badge/python-3.10%2B-blue)
 ![license](https://img.shields.io/badge/license-MIT-green)
 ![checks](https://img.shields.io/badge/native%20checks-28-8a2be2)
-![tests](https://img.shields.io/badge/tests-219-brightgreen)
+![tests](https://img.shields.io/badge/tests-223-brightgreen)
 
 **Recon → scan → report, in one command.** reconowl is a CLI penetration-testing
 orchestrator: point it at a target and it runs passive + active reconnaissance,
@@ -37,7 +37,7 @@ A run against an authorized target looks like this (output abbreviated):
       /)__)   | '_/ -_) _/ _ \ ' \/ _ \ V  V / |
       -"-"-   |_| \___\__\___/_||_\___/\_/\_/|_|
 
-  recon → scan → report   v0.4.1
+  recon → scan → report   v0.5.0
 
 ╭ Phase 1 · Passive reconnaissance ╮
 ✓ DNS: A(1), MX(1), NS(2), TXT(3)     ✓ Subdomains: 4     ✓ Archived URLs: 118
@@ -199,6 +199,11 @@ version string.
   **Markdown** for notes/GitHub, and **SARIF 2.1.0** for CI / GitHub code
   scanning (`--formats sarif`). Findings are normalized, de-duplicated, and
   severity-scored.
+- **Executive summary** — a data-driven narrative (counts, the top issue, key risk
+  areas, WAF presence) at the top of every report, ready to hand to a client.
+- **Scan-coverage panel** — states plainly whether coverage was *Complete* or
+  *Partial* and lists exactly what was skipped (time budget, blocking, unreachable),
+  so a truncated scan is never mistaken for a clean bill of health.
 - **CVSS v3.1** base score, rating, and vector on every finding (shown in the
   console and all three report formats); the summary reports the highest CVSS.
 - **Request/response proof** captured for each confirmed finding (the exact

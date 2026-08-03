@@ -6,6 +6,21 @@ All notable changes to reconowl are documented here. The format is based on
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-08-03
+
+### Added
+- **Executive summary** in every report (HTML/Markdown/JSON): a data-driven prose
+  narrative — finding counts, the highest-rated issue, key risk areas, WAF presence,
+  and a coverage caveat when the scan was partial.
+- **Scan-coverage panel**: the report now states plainly whether coverage was
+  Complete or Partial, listing exactly what was skipped (time-budget/blocking/
+  unreachable) so the *absence* of findings is never mistaken for a clean result.
+
+### Fixed
+- Exposure findings are now scored consistently with their severity (a Low
+  `.DS_Store` no longer shows a 7.5 "High" CVSS): only High/Critical leaks
+  (`.git`/`.env`/backups) keep the high-impact vector.
+
 ## [0.4.1] - 2026-08-03
 
 ### Fixed
